@@ -1,0 +1,56 @@
+/*
+  This stylesheet provides the styling for the
+  Elucid Portfolio website.
+*/
+
+// I. Import Library Provided Styles
+
+@import "lib";
+@import "reset";
+
+// II. Import Mixins
+
+@import "mixins";
+
+// III. Global Variables
+
+$default_large_margin:  80px;
+$default_medium_margin: 40px;
+$default_small_margin:  20px;
+
+$default_font_family:   OpenSans-Light;
+$default_text_color:    black;
+
+// IV. Global Element Defaults
+
+a {
+  color:           $default_text_color;
+  font-family:     $default_font_family;
+  text-decoration: none;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: $default_font_family;
+  margin:      0px;
+}
+
+p {
+  font-family: $default_font_family;
+  margin:      0px;
+}
+
+ul {
+  font-family: $default_font_family;
+  margin:      0px;
+  padding:     0px;
+}
+
+// V. General Template Elements
+
+// VI. Import Module-Specific Styles
+
+@import "modules";
+
+// VII. Import Feature-Specific Styles
+
+@import "features";

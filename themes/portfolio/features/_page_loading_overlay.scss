@@ -1,0 +1,17 @@
+/*
+  This stylesheet defines the styling for the
+  Page Loading Overlay feature.
+*/
+
+#overlay {
+  background-color: white;
+  height: 100%;
+  position: fixed;
+  top: 0px;
+  width: 100%;
+  z-index: 30000;
+
+  img {
+    padding: 10% 0% 0% 50%;
+  }
+}

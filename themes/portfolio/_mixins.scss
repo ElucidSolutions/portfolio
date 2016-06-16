@@ -1,0 +1,91 @@
+/* Mixins */
+
+@mixin transitionAll{
+   transition: all .25s ease;
+}
+
+@mixin darkenOverlay($background_color){
+  background-color: adjust-color($background_color, $lightness: -60, $alpha: -.9);
+}
+
+@mixin boxBackground($background_color) {
+  @include box-shadow(0px 1px 1px rgba(0, 0, 0, 0.2));
+
+  background-color: $background_color;
+}
+
+@mixin grayBox() {
+  @include boxBackground($primary-gray);
+}
+
+@mixin boxTitle($background_color) {
+  background-color: $background_color;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  color: white;
+  display: block;
+  font-weight: 600;
+  padding: .5em 5%;
+  font-size: 1.6em;
+}
+
+@mixin themeBoxTitle() {
+  @include boxTitle($primary-medium-color);
+}
+
+@mixin boxItem() {
+  padding: 0.2em;
+}
+
+@mixin navHeader() {
+  background-color: $primary-color;
+  color: white;
+  display: block;
+  font-weight: 300;
+  padding: 10px 0px;
+  text-align: center;
+}
+
+@mixin navItem($indent) {
+  display: block;
+  padding: 10px 10px 10px $indent;  
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+@mixin coloredNavItem($indent, $color, $background_color) {
+  @include navItem($indent);
+  background-color: $background_color;
+  color: $color;
+}
+
+@mixin navItemHover($color, $background_color) {
+  background-color: $background_color;
+  color: $color;
+  transition: background-color 0.25s ease 0s, color 0.25s ease 0s;
+}
+
+@mixin box-shadow($shadow) { 
+  -moz-box-shadow: $shadow;
+  -webkit-box-shadow: $shadow;
+  box-shadow: $shadow;
+}
+
+@mixin center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@mixin clearfix {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
+
+.clearfix {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
