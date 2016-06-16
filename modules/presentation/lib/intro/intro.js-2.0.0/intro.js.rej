@@ -1,0 +1,121 @@
+--- intro.js-2.0.0/intro.js	2016-03-08 16:38:12.110326274 -0500
++++ intro.js-2.0.0.original/intro.js	2016-03-09 10:02:55.097154421 -0500
+@@ -83,8 +83,6 @@
+    * @returns {Boolean} Success or not?
+    */
+   function _introForElement(targetElm) {
+-    this.running = true;
+-
+     var introItems = [],
+         self = this;
+ 
+@@ -303,8 +301,6 @@
+    * @method _nextStep
+    */
+   function _nextStep() {
+-    if (this.locked) { return; }
+-
+     this._direction = 'forward';
+ 
+     if (typeof (this._currentStep) === 'undefined') {
+@@ -421,9 +417,6 @@
+ 
+     //set the step to zero
+     this._currentStep = undefined;
+-
+-    this.running = false;
+-    this.locked = false;
+   }
+ 
+   /**
+@@ -877,8 +870,7 @@
+         var innerLi    = document.createElement('li');
+         var anchorLink = document.createElement('a');
+ 
+-        anchorLink.onclick = function(event) {
+-          event.stopPropagation ();
++        anchorLink.onclick = function() {
+           self.goToStep(this.getAttribute('data-stepnumber'));
+         };
+ 
+@@ -929,8 +921,7 @@
+       //next button
+       var nextTooltipButton = document.createElement('a');
+ 
+-      nextTooltipButton.onclick = function(event) {
+-        event.stopPropagation ();
++      nextTooltipButton.onclick = function() {
+         if (self._introItems.length - 1 != self._currentStep) {
+           _nextStep.call(self);
+         }
+@@ -942,8 +933,7 @@
+       //previous button
+       var prevTooltipButton = document.createElement('a');
+ 
+-      prevTooltipButton.onclick = function(event) {
+-        event.stopPropagation ();
++      prevTooltipButton.onclick = function() {
+         if (self._currentStep != 0) {
+           _previousStep.call(self);
+         }
+@@ -958,8 +948,7 @@
+       skipTooltipButton.href = 'javascript:void(0);';
+       skipTooltipButton.innerHTML = this._options.skipLabel;
+ 
+-      skipTooltipButton.onclick = function(event) {
+-        event.stopPropagation ();
++      skipTooltipButton.onclick = function() {
+         if (self._introItems.length - 1 == self._currentStep && typeof (self._introCompleteCallback) === 'function') {
+           self._introCompleteCallback.call(self);
+         }
+@@ -1166,8 +1155,7 @@
+       //set overlay layer position
+       var elementPosition = _getOffset(targetElm);
+       if (elementPosition) {
+-        // styleText += 'width: ' + elementPosition.width + 'px; height:' + elementPosition.height + 'px; top:' + elementPosition.top + 'px;left: ' + elementPosition.left + 'px;';
+-        styleText += 'width: ' + elementPosition.width + 'px; height:' + elementPosition.height + 'px;';
++        styleText += 'width: ' + elementPosition.width + 'px; height:' + elementPosition.height + 'px; top:' + elementPosition.top + 'px;left: ' + elementPosition.left + 'px;';
+         overlayLayer.setAttribute('style', styleText);
+       }
+     }
+@@ -1335,7 +1323,7 @@
+         // when user clicks on the hint element
+         hint.onclick = function(e) {
+           var evt = e ? e : window.event;
+-          evt.stopPropagation();
++          if (evt.stopPropagation)    evt.stopPropagation();
+           if (evt.cancelBubble != null) evt.cancelBubble = true;
+ 
+           _hintClick.call(self, hint, item, i);
+@@ -1470,11 +1458,7 @@
+     var closeButton = document.createElement('a');
+     closeButton.className = 'introjs-button';
+     closeButton.innerHTML = this._options.hintButtonLabel;
+-    var self = this;
+-    closeButton.onclick = function (event) {
+-      event.stopPropagation ();
+-      _hideHint.bind(self, stepId);
+-    }
++    closeButton.onclick = _hideHint.bind(this, stepId);
+ 
+     tooltipTextLayer.appendChild(tooltipWrapper);
+     tooltipTextLayer.appendChild(closeButton);
+@@ -1518,11 +1502,13 @@
+     elementPosition.height = element.offsetHeight;
+ 
+     //calculate element top and left
+-    var elementRect = element.getBoundingClientRect ();
+-    var parentRect  = element.parentNode.getBoundingClientRect ();
+-    var _y = elementRect.top - parentRect.top; 
+-    var _x = elementRect.left - parentRect.left;
+-
++    var _x = 0;
++    var _y = 0;
++    while (element && !isNaN(element.offsetLeft) && !isNaN(element.offsetTop)) {
++      _x += element.offsetLeft;
++      _y += element.offsetTop;
++      element = element.offsetParent;
++    }
+     //set top
+     elementPosition.top = _y;
+     //set left

@@ -1,0 +1,9 @@
+<div id='main_content'>
+  <div id='search_interface' class='search_interface_block'><span class='core_id_block'/></div>
+  <div id='body'>
+    <h1>Search</h1>
+    <div class='search_form_block'>search_interface</div>
+    <h2>Search Results</h2>
+    <div class='search_results_block'>search_interface</div>
+  </div>
+</div>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<books>
+  <book>
+    <name>example_book</name>
+    <title><![CDATA[Example Book]]></title>
+    <body><![CDATA[This is an example book]]></body>
+    <content>
+      <section>
+        <name>example_section</name>
+        <title><![CDATA[Example Section]]></title>
+        <content>
+          <page>
+            <name>example_page</name>
+            <title><![CDATA[Example Page]]></title>
+            <body><![CDATA[This is an example page.]]></body>
+          </page>
+        </content>
+    </content>
+  </book>
+</books>

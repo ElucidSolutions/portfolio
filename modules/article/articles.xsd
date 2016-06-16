@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <!-- Define the root element -->
+  <xs:element name="articles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="article" type="articleType" minOccurs="0" maxOccurs="unbounded">
+          <xs:unique name="uniqueArticleId">
+            <xs:selector xpath="article"/> 
+            <xs:field xpath="@id"/> 
+          </xs:unique>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Define the article element type -->
+  <xs:complexType name="articleType">
+    <xs:all>
+      <xs:element name="id" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="title" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="date" type="xs:date" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="author" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="summary" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="body" type="xs:string" minOccurs="1" maxOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+</xs:schema>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <!-- Defines the root element. -->
+  <xs:element name="database">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="presentation" type="presentationType" minOccurs="0" maxOccurs="unbounded">
+          <xs:unique name="uniquePresentationName">
+            <xs:selector xpath="presentation"/>
+            <xs:field xpath="@name"/>
+          </xs:unique>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Defines the Presentation element type. -->
+  <xs:complexType name="presentationType">
+    <xs:all>
+      <xs:element name="name"  type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="image" type="xs:anyURI" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="width" minOccurs="1" maxOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]+px"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="height" minOccurs="1" maxOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]+px"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="steps" type="stepsType" minOccurs="1" maxOccurs="1">
+        <xs:unique name="uniqueStepName">
+          <xs:selector xpath="blankStep|inputStep"/>
+          <xs:field xpath="name"/>
+        </xs:unique>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+
+  <!-- Defines the Steps element type. -->
+  <xs:complexType name="stepsType">
+    <xs:choice maxOccurs="unbounded">
+      <xs:element name="blankStep"  type="blankStepType" minOccurs="0"/>
+      <xs:element name="buttonStep" type="blankStepType" minOccurs="0"/>
+      <xs:element name="inputStep"  type="inputStepType" minOccurs="0"/>
+      <xs:element name="testStep"   type="testStepType"  minOccurs="0"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <!-- Defines the Blank Step element type. -->
+  <xs:complexType name="blankStepType">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="image" type="xs:anyURI" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="text" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="position" minOccurs="1" maxOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="bottom"/>
+            <xs:enumeration value="left"/>
+            <xs:enumeration value="right"/>
+            <xs:enumeration value="top"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="top" minOccurs="1" maxOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]+px"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="left" minOccurs="1" maxOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]+px"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="width" minOccurs="1" maxOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]+px"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="height" minOccurs="1" maxOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]+px"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Defines the Input Step element type. -->
+  <xs:complexType name="inputStepType">
+    <xs:complexContent>
+      <xs:extension base="blankStepType">
+        <xs:sequence>
+          <xs:element name="expression" type="xs:string" minOccurs="1" maxOccurs="1"/>
+          <xs:element name="errorAlert" type="xs:string" minOccurs="1" maxOccurs="1"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- Defines the Test Step element type. -->
+  <xs:complexType name="testStepType">
+    <xs:complexContent>
+      <xs:extension base="blankStepType">
+        <xs:sequence>
+          <xs:element name="options" type="optionsType" minOccurs="1" maxOccurs="1"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- Defines the Options element type. -->
+  <xs:complexType name="optionsType">
+    <xs:sequence>
+      <xs:element name="option" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="label" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="isCorrect" minOccurs="1" maxOccurs="1">
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:enumeration value="true"/>
+                  <xs:enumeration value="false"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+            <xs:element name="onSelect" type="xs:string" minOccurs="1" maxOccurs="1"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

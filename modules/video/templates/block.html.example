@@ -1,0 +1,32 @@
+<!--
+  This file demonstrates how videos can be embedded
+  within HTML templates using the video block in
+  conjunction with the video element defined by the
+  VideoJS library.
+
+  The VideoJS library defines a JavaScript shim
+  that enables the HTML5 video element within
+  browsers that do not natively support the HTML5
+  video.
+
+  The Video module loads the VideoJS library and
+  CSS files. The Video Player block initializes
+  embedded HTML5 video elements after the VideoJS
+  library has been loaded.
+
+  To use the Video Player block embed the video
+  HTML element within the block element and omit
+  the data-setup attribute. 
+
+  This block can be embedded within other HTML
+  elements by embedding:
+    <div class="video_example_block"></div>
+  within them.
+
+  Note: videos must be stored locally.
+-->
+<div class="video_player_block">
+  <video class="video-js vjs-default-skin" controls preload="auto" width="640" height="264">
+    <source src="modules/video/files/oceans.mp4"/>
+  </video>
+</div>

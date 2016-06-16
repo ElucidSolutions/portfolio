@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  This file defines the configuration settings for
+  the system. It lists the modules that comprise
+  the system and whether or not they have been
+  enabled or disabled.
+-->
+<settings>
+
+  <!--
+    The errorMode indicates whether or not the system
+    will fail and report data and user errors or
+    whether or not it will try to recover dynamically
+    from them. There are two valid settings: "strict",
+    and "nonstrict". Enable "strict" mode during
+    testing, but select "nonstrict" in production.
+  -->
+  <errorMode>strict</errorMode>
+
+  <!--
+    The defaultId element specifies the
+    default resource ID. When Lucidity expands
+    a page and the page's URL does not specify a
+    resource ID, Lucidity will load the resource
+    referenced here.
+  -->
+  <defaultId>example_page</defaultId>
+
+  <!--
+    The modules element contains a list of all of the
+    modules installed on the system and whether or
+    not they have been enabled or disabled.
+  -->
+  <modules>
+    <module name="example"          enabled="true" url="modules/example/example.js"/>
+    <module name="template"         enabled="false" url="modules/template/template.js"/>
+    <module name="menu"             enabled="false" url="modules/menu/menu.js"/>
+    <module name="search"           enabled="false" url="modules/search/search.js"/>
+
+    <module name="article"          enabled="false" url="modules/article/article.js"/>
+    <module name="analytics"        enabled="false" url="modules/analytics/analytics.js"/>
+    <module name="book"             enabled="false" url="modules/book/book.js"/>
+    <module name="bxslider"         enabled="false" url="modules/bxslider/bxslider.js"/>
+    <module name="lightbox"         enabled="false" url="modules/lightbox/lightbox.js"/>
+    <module name="sidr"             enabled="false" url="modules/sidr/sidr.js"/>
+    <module name="video"            enabled="false" url="modules/video/video.js"/>
+    <module name="rate"             enabled="false" url="modules/rate/rate.js"/>
+    <module name="video_library"    enabled="false" url="modules/video_library/video_library.js"/>
+  </modules>
+</settings>

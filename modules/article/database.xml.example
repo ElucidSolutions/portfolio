@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<articles>
+  <article>
+    <id>example-article</id>
+    <title>Example Article</title>
+    <date>2014-02-27</date>
+    <author>Lary D. Lee jr.</author>
+    <summary><![CDATA[This is an example article]]></summary>
+    <body><![CDATA[This is a simple example.]]></body>
+  </article>
+</articles>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  This file defines the Books Database schema.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <!-- Define the root element -->
+  <xs:element name="books">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="book" type="bookType" minOccurs="0" maxOccurs="unbounded">
+          <xs:unique name="uniqueBookName">
+            <xs:selector xpath="book"/>
+            <xs:field xpath="@name"/>
+          </xs:unique>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Define the book element type -->
+  <xs:complexType name="bookType">
+    <xs:all>
+      <xs:element name="name"    type="xs:string"   minOccurs="1" maxOccurs="1"/>
+      <xs:element name="title"   type="xs:string"   minOccurs="1" maxOccurs="1"/>
+      <xs:element name="body"    type="xs:string"   minOccurs="1" maxOccurs="1"/>
+      <xs:element name="content" type="contentType" minOccurs="1" maxOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+
+  <!-- Define the content element type -->
+  <xs:complexType name="contentType">
+    <xs:choice maxOccurs="unbounded">
+      <xs:element name="section" type="sectionType" minOccurs="0"/>
+      <xs:element name="page" type="pageType" minOccurs="0"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <!-- Define the section element type -->
+  <xs:complexType name="sectionType">
+    <xs:all>
+      <xs:element name="name"    type="xs:string"   minOccurs="1" maxOccurs="1"/>
+      <xs:element name="title"   type="xs:string"   minOccurs="1" maxOccurs="1"/>
+      <xs:element name="content" type="contentType" minOccurs="1" maxOccurs="1"/>
+    </xs:all> 
+  </xs:complexType>
+
+  <!-- Define the page element type -->
+  <xs:complexType name="pageType">
+    <xs:all>
+      <xs:element name="name"  type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="title" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="body"  type="xs:string" minOccurs="1" maxOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+</xs:schema>

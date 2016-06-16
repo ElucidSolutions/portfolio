@@ -1,0 +1,25 @@
+#overlay {
+  background-color: white;
+  height: 100%;
+  position: fixed;
+  top: 0px;
+  width: 100%;
+  z-index: 30000;
+
+  img {
+    padding: 10% 0% 0% 50%;
+  }
+}
+
+#back_to_top {
+  background: rgb(247, 247, 247) url("images/backToTop.png") no-repeat scroll 90% 50%;
+  border: 1px solid rgb(51, 51, 51);
+  bottom: 0px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  opacity: 0;
+  padding: 15px 50px 15px 25px;
+  position: fixed;
+  right: 2%;
+  z-index: 1000;
+}

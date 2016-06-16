@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Navigate to: #video_library_page/example_library/example_collection/http:%2F%2Fvjs.zencdn.net%2Fv%2Foceans.mp4
+  to view the example video.
+-->
+<database>
+  <library>
+    <name>example_library</name>
+    <title>Example Library</title>
+    <description>This is an example library.</description>
+    <collection>
+      <name>example_collection</name>
+      <title>Example Collection</title>
+      <description>This is an example collection.</description>
+      <video>
+	<title>Example Video</title>
+	<description><![CDATA[This is an example video.]]></description>
+	<duration>00:00:00</duration>
+        <url>http://vjs.zencdn.net/v/oceans.mp4</url>
+        <transcript>example/transcript.xml</transcript>
+      </video>
+    </collection>
+  </library>
+</database>

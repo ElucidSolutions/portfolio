@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database>
+  <presentation>
+    <name>Example Presentation</name>
+    <image>https://www.wikipedia.org/portal/wikipedia.org/assets/img/Wikipedia-logo-v2.png</image>
+    <width>500px</width>
+    <height>500px</height>
+    <steps>
+      <blankStep>
+        <name>First Step</name>
+        <image>https://www.wikipedia.org/portal/wikipedia.org/assets/img/Wikipedia-logo-v2.png</image>
+        <text><![CDATA[<p>This is an example blank step.</p>]]></text>
+        <position>top</position>
+        <top>10%</top>
+        <left>10%</left>
+        <width>100px</width>
+        <height>100px</height>
+      </blankStep>
+      <inputStep>
+        <name>Second Step</name>
+        <image>https://www.wikipedia.org/portal/wikipedia.org/assets/img/Wikipedia-logo-v2.png</image>
+        <text><![CDATA[<p>This is an example input step.</p>]]></text>
+        <position>top</position>
+        <top>10%</top>
+        <left>10%</left>
+        <width>100px</width>
+        <height>100px</height>
+        <expression><![CDATA[\d+\.\d{2}]]></expression>
+      </inputStep>
+      <testStep>
+        <name>Third Step</name>
+        <image>https://www.wikipedia.org/portal/wikipedia.org/assets/img/Wikipedia-logo-v2.png</image>
+        <text><![CDATA[<p>This is an example test.</p>]]></text>
+        <position>top</position>
+        <top>10%</top>
+        <left>10%</left>
+        <width>100px</width>
+        <height>100px</height>
+        <options>
+          <option>
+            <label><![CDATA[First option]]></label>
+            <isCorrect>true</isCorrect>
+            <onSelect><![CDATA[Correct!]]></onSelect>
+          </option>
+          <option>
+            <label><![CDATA[Second option]]></label>
+            <isCorrect>false</isCorrect>
+            <onSelect><![CDATA[Incorrect!]]></onSelect>
+          </option>
+        </options>
+      </testStep>
+    </steps>
+  </presentation>
+</database>

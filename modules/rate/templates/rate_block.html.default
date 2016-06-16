@@ -1,0 +1,15 @@
+<div class="rate">
+  <script>
+    function rate_replaceParentWithMessage (element) {
+      $(element).parent ().fadeOut ('slow',
+        function () {
+          $(this).html ('<em>Thank you for your feedback!</em>').fadeIn ('slow');
+      });
+    }
+  </script>
+  <p>
+    <em>Was the information in this section helpful?</em>
+    <span class="rate_up_vote_block rate_up_vote" onclick="rate_replaceParentWithMessage (this);">Yes</span>/
+    <span class="rate_down_vote_block rate_down_vote" onclick="rate_replaceParentWithMessage (this);">No</span>
+  </p>
+</div>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This file defines the Search schema. -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <!-- Define the root element -->
+  <xs:element name="database">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="index" type="indexType" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:unique name="uniqueIndexName">
+      <xs:selector xpath="index"/>
+      <xs:field xpath="name"/>
+    </xs:unique>
+  </xs:element>
+
+  <!-- Define the index element type -->
+  <xs:complexType name="indexType">
+    <xs:all>
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="lunrIndexURL" type="xs:anyURI" minOccurs="0"/>
+      <xs:element name="setIds">
+        <xs:complexType>
+          <xs:sequence>
+          <xs:element name="setId" type="xs:anyURI" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+</xs:schema>

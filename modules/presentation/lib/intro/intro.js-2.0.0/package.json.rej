@@ -1,0 +1,11 @@
+--- intro.js-2.0.0/package.json	2015-12-21 09:12:57.000000000 -0500
++++ intro.js-2.0.0.original/package.json	2016-03-09 10:02:55.093154401 -0500
+@@ -1,7 +1,7 @@
+ {
+     "name": "intro.js",
+     "description": "Better introductions for websites and features with a step-by-step guide for your projects",
+-    "version": "2.0",
++    "version": "2.0.0",
+     "author": "Afshin Mehrabani <afshin.meh@gmail.com>",
+     "repository": {
+         "type": "git",

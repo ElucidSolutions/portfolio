@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  This file defines the schema for the system
+  configuration file, settings.xml. 
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <!-- Defines the root element. -->
+  <xs:element name="settings">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="errorMode" minOccurs="1" maxOccurs="1">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="strict"/>
+              <xs:enumeration value="nonstrict"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="defaultId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+        <xs:element name="theme" type="xs:anyURI" minOccurs="1" maxOccurs="1"/>
+        <xs:element name="modules" minOccurs="1" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="module" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="required"/>
+                  <xs:attribute name="enabled" type="xs:boolean" use="required"/>
+                  <xs:attribute name="url" type="xs:anyURI" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

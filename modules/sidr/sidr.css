@@ -1,0 +1,12 @@
+.sidr {
+  display: none;
+  position: absolute;
+  position: fixed;
+  top: 0;
+  height: 100%;
+  z-index: 999999;
+  width: 300px;
+  overflow-x: none;
+  overflow-y: auto; }
+
+/*# sourceMappingURL=sidr.css.map */
