@@ -77,9 +77,12 @@ $(document).ready (function () {
   loadSettings (function (settings) {
     // II. Load the enabled modules.
     loadModules (settings, function () {
-      // III. Call the module load event handlers.
+      // III. Update the error mode.
+      STRICT_ERROR_MODE = settings.errorMode;
+
+      // IV. Call the module load event handlers.
       MODULE_LOAD_HANDLERS.execute (function () {
-        // IV. Call the app load event handlers.
+        // V. Call the app load event handlers.
         APP_LOAD_HANDLERS.execute (settings, function () {});
       });
     });
@@ -309,10 +312,23 @@ function getContentURL (id) {
 
 /*
   getIdFromURL accepts a Content URL as a URI and
-  returns its id parameter.
+  returns its ID parameter.
 */
 function getIdFromURL (url) {
-  return url.fragment ();
+  return (url.fragment ().split ('#'))[0];
+}
+
+/*
+  Accepts a Content URL as a URI object and
+  returns the nested fragment identifier as
+  a string.
+
+  Note: ID's may contain nested fragment
+  identifiers which can be used to create
+  fragment links within pages.
+*/
+function getFragmentFromURL (url) {
+  return (url.fragment ().split ('#'))[1];
 }
 
 /*

@@ -103,7 +103,7 @@ function article_loadSettings (url, done) {
       done (null, article_parseSettings (doc));
     },
     error: function (request, status, error) {
-      var error = new Error ('[article][article_loadSettings] Error: an error occured while trying to load the article settings.xml file from "' + url + '". ' + error);
+      var error = new Error ('[article][article_loadSettings] Error: an error occured while trying to load the Article module's settings.xml file from "' + url + '". ' + error);
       strictError (error);
       done (error);
     }

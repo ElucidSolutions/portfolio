@@ -1,6 +1,24 @@
 Block Module
 ============
 
+The Block module defines the Block feature.
+
+A Block is an HTML element that, when "expanded", is either replaced by a new HTML element or instructs Lucidity to perform some action (such as notify Google Analytics of a page visit).
+
+Blocks can be embedded within HTML templates and may be used to add predefined web components (such as video players and menus) to sites.
+
+Every block is associated with a Block Handler which is responsible for performing the action indicated by the block and may return an HTML element to replace it. 
+
+There are two types of Block handlers:
+
+* Block Handler Strings are URL strings that reference HTML templates. When applied, the Block module will replace the block element associated with the handler with the HTML template referenced by handler. 
+
+* Block Handler Functions are functions that accept two arguments: `context, a Block Expansion Context that includes the block element; and `done` a function that accepts two arguments, an Error object, and a jQuery HTML Element; performs the action indicated by the block; possibly replaces the block element with an HTML element; and may pass that new element to `done` for further expansion.
+
+The Block module is responsible for maintaining the set of registered block handlers and for expanding blocks.
+
+In particular, the Page module uses this module to expand blocks nested within page elements. 
+
 Block Handlers
 --------------
 
@@ -24,6 +42,8 @@ Any function that creates a child element within `element` or modifies `element`
 
 The Block Handler Store Class
 -----------------------------
+
+Registered block handlers are stored in a global `block_HandlerStore` named `block_HANDLERS`. Other modules can register block handlers using `block_HANDLERS.add ()`.
 
 ```javascript
 /*
@@ -123,19 +143,6 @@ function block_Context (id, element) {
   this.element = element;
 }
 ```
-
-The Page Load Event Handler
----------------------------
-
-Whenever Lucidity renders a page, this module iterates over the HTML elements contained within the page in inner-outer depth-first order.
-
-When this module encounters an HTML element that has an HTML class, it checks to see whether or not there is a block handler in `block_BLOCK_HANDLERS`associated with the class.
-
-If there is, this module calls the block handler and passes the element to it in a Block Expansion Context.
-
-The block handler may or may not modify or remove the element.
-
-When the block handler returns, this module continues iterating over the remaining elements.
 
 The Module Load Event Handler
 -----------------------------
