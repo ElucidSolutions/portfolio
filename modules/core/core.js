@@ -258,7 +258,11 @@ function getTemplate (url, done) {
   the "errorMode" parameter in settings.xml.
 */
 function strictError (error) {
-  if (STRICT_ERROR_MODE) { throw error };
+  if (STRICT_ERROR_MODE) {
+    throw (error);
+  } else {
+    console.log (error.message);
+  }
 }
 
 /*

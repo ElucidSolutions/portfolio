@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<settings>
+  <!--
+    The default_page_id element specifies the
+    default page ID. When the Page module loads
+    a page and the page's URL does not include a
+    page ID, the Page module will load the page
+    referenced here.
+
+    If this parameter is left blank, the Page
+    module will simply return index.html without
+    loading anything and call the Page Load
+    event handlers.
+  -->
+  <default_page_id></default_page_id>
+
+  <!--
+    If a page handler returns an error while
+    trying to render a page, the Page module
+    will load the HTML template referenced by
+    the error_page_template element, replace
+    any page_error_blocks embedded within the
+    template with the error message, and return
+    it instead.
+
+    This parameter should be a relative URL that
+    references an HTML template.
+  -->
+  <error_page_template>modules/page/templates/error_page.html</error_page_template>
+</settings>

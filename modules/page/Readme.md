@@ -539,7 +539,7 @@ function page_scroll (url) {
   var fragmentElement = $('#' + fragmentId);
 
   fragmentElement.length === 0 ?
-    strictError ('[page][page_scroll] Warning: This page does not have an element whose ID equals "' + fragmentId + '".') :
+    strictError (new Error ('[page][page_scroll] Warning: This page does not have an element whose ID equals "' + fragmentId + '".')) :
     $('html, body').animate ({
       scrollTop: fragmentElement.offset ().top
     });
