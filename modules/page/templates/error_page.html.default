@@ -1,0 +1,8 @@
+<div class="error_page">
+  <h1>Oops...</h1>
+  <p>An error occured while we were trying to load the page.</p>
+  <div class="error_details">
+    <h2>Details</h2>
+    <div class="page_error_block"/>
+  </div>
+</div>

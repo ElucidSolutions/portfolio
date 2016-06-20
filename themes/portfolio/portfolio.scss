@@ -18,8 +18,15 @@ $default_large_margin:  80px;
 $default_medium_margin: 40px;
 $default_small_margin:  20px;
 
-$default_font_family:   OpenSans-Light;
-$default_text_color:    black;
+$default_font_family: OpenSans-Light;
+$default_text_color:  black;
+
+$large_screen_width:  950px;
+$medium_screen_width: 500px;
+$small_screen_width:  400px;
+
+$max_page_width:     940px;
+$page_header_height: 340px;
 
 // IV. Global Element Defaults
 
@@ -46,6 +53,56 @@ ul {
 }
 
 // V. General Template Elements
+
+#page {
+  margin:    0px auto;
+  max-width: $max_page_width;
+
+  #page_header {
+    background-image:  url("images/banner.jpg");
+    background-repeat: no-repeat;
+    background-size:   cover;
+    height:            $page_header_height;
+
+    #page_header_content {
+      @include transform(translateY(-50%));
+      position: relative;
+      top:      50%;
+
+      #page_header_title {
+        margin:     0px auto;
+        text-align: center;
+        width:      80%;
+
+        span {
+          background-color: rgba(0,0,0,0.7);
+          box-shadow:       20px 0 0 #000, -20px 0 0 #000;
+          color:            white;
+          font-size:        55px;
+          line-height:      68px;
+        }
+      }
+
+      #page_header_tagline {
+        margin:      0px auto;
+        text-align:  center;
+        width:       90%;
+
+        span {
+          background-color: rgba(0,0,0,0.7);
+          box-shadow:       20px 0 0 #000, -20px 0 0 #000;
+          color:            white;
+          font-size:        27px;
+          line-height:      39px;
+        }
+      }
+    }
+  }
+
+  #page_body {
+    margin: $default_small_margin;
+  }
+}
 
 // VI. Import Module-Specific Styles
 
