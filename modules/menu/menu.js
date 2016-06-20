@@ -5,11 +5,10 @@
 */
 
 /*
-  The `menu_Menu` represents the site's global
-  menu as a menu_Menu object.
-
+  The `menu_MENUS` menu_Menu array lists the
+  set of registered menus keyed by menu ID.
 */
-var menu_MENU = new menu_Menu ([]);
+var menu_MENUS = {};
 
 /*
   The Menu module's load event handler. This
@@ -50,39 +49,43 @@ MODULE_LOAD_HANDLERS.add (
     an Error object and a JQuery HTML Element.
 
   context.element must be a DIV element that
-  contains six child elements:
+  contains seven child elements:
 
   * The first element must belong to the
     menu_id class and contain a single text node
-    representing a menu element ID.
+    representing a menu ID.
 
   * The second element must belong to the
+    menu_node_id class and contain a single text
+    node representing a menu node ID.
+
+  * The third element must belong to the
     menu_num_columns class and contain a single
     text node specifying the number of columns
     that the menu element will be divided into.
 
-  * The third element must belong to the
+  * The fourth element must belong to the
     menu_max_level class and contain an integer
     value specifying the maximum number of menu
     levels to include in the menu element.
 
-  * The fourth element must belong to the
+  * The fifth element must belong to the
     max_expand_level class and contains an
     integer value specifying the maximum number
     of menu levels to initially display in the
     menu element.
 
-  * The fifth element must belong to the
+  * The sixth element must belong to the
     menu_expandable class and must contain a
     single boolean value of "true" or "false". This
     element indicates whether or not users should
     be able to expand and collapse menu items
     beyond the max_expand_level.
 
-  * and the sixth element must belong to the
-  menu_selected_element_id class and contain a
-  single text node representing the initially
-  selected element ID.
+  * and the seventh element must belong to the
+    menu_selected_element_id class and contain a
+    single text node representing the initially
+    selected element ID.
   
 
   menu_contentsBlock:
@@ -103,6 +106,7 @@ MODULE_LOAD_HANDLERS.add (
 function menu_contentsBlock (context, done) {
   getBlockArguments ([
       {'name': 'menu_id',                  'text': true, 'required': true},
+      {'name': 'menu_node_id',             'text': true, 'required': true},
       {'name': 'menu_num_columns',         'text': true, 'required': true},
       {'name': 'menu_max_level',           'text': true, 'required': true},
       {'name': 'menu_expand_level',        'text': true, 'required': true},
@@ -113,28 +117,40 @@ function menu_contentsBlock (context, done) {
     function (error, blockArguments) {
       if (error) { return done (error); }
 
-      var node = menu_MENU.getNode (blockArguments.menu_id);
+      var menu = menu_MENUS [blockArguments.menu_id.trim ()];
+      if (!menu) {
+        var error = new Error ('[menu][menu_contentsBlock] Error: an error occured while trying to load menu "' + blockArguments.menu_id.trim () + '". The menu does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var node = menu.getNode (blockArguments.menu_node_id.trim ());
+      if (!node) {
+        var error = new Error ('[menu][menu_contentsBlock] Error: an error occured while trying to load node "' + blockArguments.menu_node_id.trim () + '". The node does not exist.');
+        strictError (error);
+        return done (error);
+      }
 
       var element = node.getContentsElement (
-        blockArguments.menu_num_columns,
-        blockArguments.menu_max_level
+        blockArguments.menu_num_columns.trim (),
+        blockArguments.menu_max_level.trim ()
       );
 
-      var level = parseInt (blockArguments.menu_expand_level) + 1;
+      var level = parseInt (blockArguments.menu_expand_level.trim ()) + 1;
       menu_collapse (level, element);
 
       if (blockArguments.menu_expandable === 'true') {
-        menu_makeCollapsable (level, blockArguments.menu_max_level, element);
+        menu_makeCollapsable (level, blockArguments.menu_max_level.trim (), element);
       }
 
-      var leaf = menu_MENU.getLeaf (blockArguments.menu_selected_element_id);
+      var leaf = menu.getLeaf (blockArguments.menu_selected_element_id.trim ());
       if (leaf) {
         var line = leaf.getLine ();
 
-        menu_select     (blockArguments.menu_selected_element_id, element);
+        menu_select     (blockArguments.menu_selected_element_id.trim (), element);
         menu_selectLine (line, element);
 
-        if (blockArguments.menu_expandable === 'true') {
+        if (blockArguments.menu_expandable.trim () === 'true') {
           menu_expandLine (line, element);
         }
       }
@@ -144,7 +160,7 @@ function menu_contentsBlock (context, done) {
       PAGE_LOAD_HANDLERS.add (
         function (id, done) {
           menu_deselect (element);
-          var leaf = menu_MENU.getLeaf (id);
+          var leaf = menu.getLeaf (id);
           if (leaf) {
             var newLine = leaf.getLine ();
             menu_select     (id, element);
@@ -165,8 +181,15 @@ function menu_contentsBlock (context, done) {
   * done, a function that accepts two arguments:
     an Error object and a JQuery HTML Element.
 
-  context.element must contain a single text node
-  that represents a Menu Element ID.
+  context.element must be a DIV element that
+  contains two child elements.
+
+  * The first, must belong to the menu_id class
+    and contain a single text node representing
+    a menu ID.
+  * The second, must belong to the menu_leaf_id
+    class and contain a single text node
+    representing a menu leaf ID.
 
   menu_leafLabelBlock:
 
@@ -180,9 +203,31 @@ function menu_contentsBlock (context, done) {
   the error to done instead.
 */
 function menu_leafLabelBlock (context, done) {
-  var element = menu_MENU.getLeaf (context.element.text ().trim ()).getLabelElement ();
-  context.element.replaceWith (element);
-  done (null, element);
+  var errorPrefix = '[menu][menu_leafLabelBlock]';
+  getBlockArguments ([
+      {'name': 'menu_id',      'text': true, 'required': true},
+      {'name': 'menu_leaf_id', 'text': true, 'required': true}
+    ],
+    context.element,
+    function (error, blockArguments) {
+      var menu = menu_MENUS [blockArguments.menu_id.trim ()];
+      if (!menu) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu "' + blockArguments.menu_id.trim () + '". The menu does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var leaf = menu.getLeaf (blockArguments.menu_leaf_id.trim ())
+      if (!leaf) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu leaf "' + blockArguments.menu_leaf_id.trim () + '". The leaf does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var element = leaf.getLabelElement ();
+      context.element.replaceWith (element);
+      done (null, element);
+  });
 }
 
 /*
@@ -192,8 +237,15 @@ function menu_leafLabelBlock (context, done) {
   * done, a function that accepts two arguments:
     an Error object and a JQuery HTML Element.
 
-  context.element must contain a single text node
-  that represents a Menu Element ID.
+  context.element must be a DIV element that
+  contains two child elements.
+
+  * The first, must belong to the menu_id class
+    and contain a single text node representing
+    a menu ID.
+  * The second, must belong to the menu_leaf_id
+    class and contain a single text node
+    representing a menu leaf ID.
 
   menu_leafLinkBlock:
 
@@ -207,57 +259,373 @@ function menu_leafLabelBlock (context, done) {
   the error to done instead.
 */
 function menu_leafLinkBlock (context, done) {
-  var element = menu_MENU.getLeaf (context.element.text ().trim ()).getLinkElement ();
-  context.element.replaceWith (element);
-  done (null, element);
+  var errorPrefix = '[menu][menu_leafLinkBlock]';
+  getBlockArguments ([
+      {'name': 'menu_id',      'text': true, 'required': true},
+      {'name': 'menu_leaf_id', 'text': true, 'required': true}
+    ],
+    context.element,
+    function (error, blockArguments) {
+      var menu = menu_MENUS [blockArguments.menu_id.trim ()];
+      if (!menu) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu "' + blockArguments.menu_id.trim () + '". The menu does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var leaf = menu.getLeaf (blockArguments.menu_leaf_id.trim ())
+      if (!leaf) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu leaf "' + blockArguments.menu_leaf_id.trim () + '". The leaf does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var element = leaf.getLinkElement ();
+      context.element.replaceWith (element);
+      done (null, element);
+  });
 }
 
 /*
+  menu_leafNextLabelBlock accepts two arguments:
+
+  * context, a Block Expansion Context
+  * done, a function that accepts two arguments:
+    an Error object and a JQuery HTML Element.
+
+  context.element must be a DIV element that
+  contains two child elements.
+
+  * The first, must belong to the menu_id class
+    and contain a single text node representing
+    a menu ID.
+  * The second, must belong to the menu_leaf_id
+    class and contain a single text node
+    representing a menu leaf ID.
+
+  menu_leafNextLabelBlock:
+
+  * loads referenced menu element
+  * creates an HTML element that represents the
+    title of the next leaf in the referenced menu
+  * replaces context.element with the new element
+  * and passes the new element to done.
+
+  If an error occurs, menu_leafNextLabelBlock
+  passes the error to done instead.
 */
 function menu_leafNextLabelBlock (context, done) {
-  var element = menu_MENU.getLeaf (context.element.text ().trim ()).getNextLabelElement ();
-  context.element.replaceWith (element);
-  done (null, element);
+  var errorPrefix = '[menu][menu_leafNextLabelBlock]';
+  getBlockArguments ([
+      {'name': 'menu_id',      'text': true, 'required': true},
+      {'name': 'menu_leaf_id', 'text': true, 'required': true}
+    ],
+    context.element,
+    function (error, blockArguments) {
+      var menu = menu_MENUS [blockArguments.menu_id.trim ()];
+      if (!menu) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu "' + blockArguments.menu_id.trim () + '". The menu does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var leaf = menu.getLeaf (blockArguments.menu_leaf_id.trim ())
+      if (!leaf) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu leaf "' + blockArguments.menu_leaf_id.trim () + '". The leaf does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var element = leaf.getNextLabelElement ();
+      context.element.replaceWith (element);
+      done (null, element);
+  });
 }
 
 /*
+  menu_leafNextLinkBlock accepts two arguments:
+
+  * context, a Block Expansion Context
+  * done, a function that accepts two arguments:
+    an Error object and a JQuery HTML Element.
+
+  context.element must be a DIV element that
+  contains two child elements.
+
+  * The first, must belong to the menu_id class
+    and contain a single text node representing
+    a menu ID.
+  * The second, must belong to the menu_leaf_id
+    class and contain a single text node
+    representing a menu leaf ID.
+
+  menu_leafNextLinkBlock:
+
+  * loads referenced menu element
+  * creates an HTML element that represents a
+    link to the next leaf in the referenced menu
+  * replaces context.element with the new element
+  * and passes the new element to done.
+
+  If an error occurs, menu_leafNextLinkBlock
+  passes the error to done instead.
 */
 function menu_leafNextLinkBlock (context, done) {
-  var element = menu_MENU.getLeaf (context.element.text ().trim ()).getNextLinkElement ();
-  context.element.replaceWith (element);
-  done (null, element);
+  var errorPrefix = '[menu][menu_leafNextLinkBlock]';
+  getBlockArguments ([
+      {'name': 'menu_id',      'text': true, 'required': true},
+      {'name': 'menu_leaf_id', 'text': true, 'required': true}
+    ],
+    context.element,
+    function (error, blockArguments) {
+      var menu = menu_MENUS [blockArguments.menu_id.trim ()];
+      if (!menu) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu "' + blockArguments.menu_id.trim () + '". The menu does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var leaf = menu.getLeaf (blockArguments.menu_leaf_id.trim ())
+      if (!leaf) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu leaf "' + blockArguments.menu_leaf_id.trim () + '". The leaf does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var element = leaf.getNextLinkElement ();
+      context.element.replaceWith (element);
+      done (null, element);
+  });
 }
 
 /*
+  menu_leafParentLabelBlock accepts two
+  arguments:
+
+  * context, a Block Expansion Context
+  * done, a function that accepts two arguments:
+    an Error object and a JQuery HTML Element.
+
+  context.element must be a DIV element that
+  contains two child elements.
+
+  * The first, must belong to the menu_id class
+    and contain a single text node representing
+    a menu ID.
+  * The second, must belong to the menu_leaf_id
+    class and contain a single text node
+    representing a menu leaf ID.
+
+  menu_leafParentLabelBlock:
+
+  * loads referenced menu element
+  * creates an HTML element that represents the
+    title of the referenced leaf's parent
+  * replaces context.element with the new element
+  * and passes the new element to done.
+
+  If an error occurs, menu_leafParentLabelBlock
+  passes the error to done instead.
 */
 function menu_leafParentLabelBlock (context, done) {
-  var element = menu_MENU.getLeaf (context.element.text ().trim ()).getParentLabelElement ();
-  context.element.replaceWith (element);
-  done (null, element);
+  var errorPrefix = '[menu][menu_leafParentLabelBlock]';
+  getBlockArguments ([
+      {'name': 'menu_id',      'text': true, 'required': true},
+      {'name': 'menu_leaf_id', 'text': true, 'required': true}
+    ],
+    context.element,
+    function (error, blockArguments) {
+      var menu = menu_MENUS [blockArguments.menu_id.trim ()];
+      if (!menu) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu "' + blockArguments.menu_id.trim () + '". The menu does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var leaf = menu.getLeaf (blockArguments.menu_leaf_id.trim ())
+      if (!leaf) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu leaf "' + blockArguments.menu_leaf_id.trim () + '". The leaf does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var element = leaf.getParentLabelElement ();
+      context.element.replaceWith (element);
+      done (null, element);
+  });
 }
 
 /*
+  menu_leafParentLinkBlock accepts two
+  arguments:
+
+  * context, a Block Expansion Context
+  * done, a function that accepts two arguments:
+    an Error object and a JQuery HTML Element.
+
+  context.element must be a DIV element that
+  contains two child elements.
+
+  * The first, must belong to the menu_id class
+    and contain a single text node representing
+    a menu ID.
+  * The second, must belong to the menu_leaf_id
+    class and contain a single text node
+    representing a menu leaf ID.
+
+  menu_leafParentLinkBlock:
+
+  * loads referenced menu element
+  * creates an HTML element that represents a
+    link to the referenced leaf's parent
+  * replaces context.element with the new element
+  * and passes the new element to done.
+
+  If an error occurs, menu_leafParentLinkBlock
+  passes the error to done instead.
 */
 function menu_leafParentLinkBlock (context, done) {
-  var element = menu_MENU.getLeaf (context.element.text ().trim ()).getParentLinkElement ();
-  context.element.replaceWith (element);
-  done (null, element);
+  var errorPrefix = '[menu][menu_leafParentLinkBlock]';
+  getBlockArguments ([
+      {'name': 'menu_id',      'text': true, 'required': true},
+      {'name': 'menu_leaf_id', 'text': true, 'required': true}
+    ],
+    context.element,
+    function (error, blockArguments) {
+      var menu = menu_MENUS [blockArguments.menu_id.trim ()];
+      if (!menu) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu "' + blockArguments.menu_id.trim () + '". The menu does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var leaf = menu.getLeaf (blockArguments.menu_leaf_id.trim ())
+      if (!leaf) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu leaf "' + blockArguments.menu_leaf_id.trim () + '". The leaf does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var element = leaf.getParentLinkElement ();
+      context.element.replaceWith (element);
+      done (null, element);
+  });
 }
 
 /*
+  menu_leafPreviousLabelBlock accepts two
+  arguments:
+
+  * context, a Block Expansion Context
+  * done, a function that accepts two arguments:
+    an Error object and a JQuery HTML Element.
+
+  context.element must be a DIV element that
+  contains two child elements.
+
+  * The first, must belong to the menu_id class
+    and contain a single text node representing
+    a menu ID.
+  * The second, must belong to the menu_leaf_id
+    class and contain a single text node
+    representing a menu leaf ID.
+
+  menu_leafPreviousLabelBlock:
+
+  * loads referenced menu element
+  * creates an HTML element that represents the
+    title of the previous leaf in the referenced
+    menu
+  * replaces context.element with the new element
+  * and passes the new element to done.
+
+  If an error occurs, menu_leafPreviousLabelBlock
+  passes the error to done instead.
 */
 function menu_leafPreviousLabelBlock (context, done) {
-  var element = menu_MENU.getLeaf (context.element.text ().trim ()).getPreviousLabelElement ();
-  context.element.replaceWith (element);
-  done (null, element);
+  var errorPrefix = '[menu][menu_leafPreviousLabelBlock]';
+  getBlockArguments ([
+      {'name': 'menu_id',      'text': true, 'required': true},
+      {'name': 'menu_leaf_id', 'text': true, 'required': true}
+    ],
+    context.element,
+    function (error, blockArguments) {
+      var menu = menu_MENUS [blockArguments.menu_id.trim ()];
+      if (!menu) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu "' + blockArguments.menu_id.trim () + '". The menu does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var leaf = menu.getLeaf (blockArguments.menu_leaf_id.trim ())
+      if (!leaf) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu leaf "' + blockArguments.menu_leaf_id.trim () + '". The leaf does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var element = leaf.getPreviousLabelElement ();
+      context.element.replaceWith (element);
+      done (null, element);
+  });
 }
 
 /*
+  menu_leafPreviousLinkBlock accepts two
+  arguments:
+
+  * context, a Block Expansion Context
+  * done, a function that accepts two arguments:
+    an Error object and a JQuery HTML Element.
+
+  context.element must be a DIV element that
+  contains two child elements.
+
+  * The first, must belong to the menu_id class
+    and contain a single text node representing
+    a menu ID.
+  * The second, must belong to the menu_leaf_id
+    class and contain a single text node
+    representing a menu leaf ID.
+
+  menu_leafPreviousLinkBlock:
+
+  * loads referenced menu element
+  * creates an HTML element that represents a
+    link to the previous leaf in the referenced
+    menu
+  * replaces context.element with the new element
+  * and passes the new element to done.
+
+  If an error occurs, menu_leafPreviousLabelBlock
+  passes the error to done instead.
 */
 function menu_leafPreviousLinkBlock (context, done) {
-  var element = menu_MENU.getLeaf (context.element.text ().trim ()).getPreviousLinkElement ();
-  context.element.replaceWith (element);
-  done (null, element);
+  var errorPrefix = '[menu][menu_leafPreviousLinkBlock]';
+  getBlockArguments ([
+      {'name': 'menu_id',      'text': true, 'required': true},
+      {'name': 'menu_leaf_id', 'text': true, 'required': true}
+    ],
+    context.element,
+    function (error, blockArguments) {
+      var menu = menu_MENUS [blockArguments.menu_id.trim ()];
+      if (!menu) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu "' + blockArguments.menu_id.trim () + '". The menu does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var leaf = menu.getLeaf (blockArguments.menu_leaf_id.trim ())
+      if (!leaf) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu leaf "' + blockArguments.menu_leaf_id.trim () + '". The leaf does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var element = leaf.getPreviousLinkElement ();
+      context.element.replaceWith (element);
+      done (null, element);
+  });
 }
 
 /*
@@ -267,14 +635,21 @@ function menu_leafPreviousLinkBlock (context, done) {
   * done, a function that accepts two arguments:
     an Error object and a JQuery HTML Element.
 
-  context.element must contain a single text node
-  that represents a Menu Element ID.
+  context.element must be a DIV element that
+  contains two child elements.
+
+  * The first, must belong to the menu_id class
+    and contain a single text node representing
+    a menu ID.
+  * The second, must belong to the menu_node_id
+    class and contain a single text node
+    representing a menu node ID.
 
   menu_nodeLabelBlock:
 
   * loads the referenced menu element
-  * creates an HTML link element that represents
-    the menu element's title
+  * creates an HTML label element that represents
+    the menu node's title
   * replaces context.element with the new element
   * and passes the new element to done.
 
@@ -282,9 +657,31 @@ function menu_leafPreviousLinkBlock (context, done) {
   the error to done instead.
 */
 function menu_nodeLabelBlock (context, done) {
-  var element = menu_MENU.getNode (context.element.text ().trim ()).getLabelElement ();
-  context.element.replaceWith (element);
-  done (null, element);
+  var errorPrefix = '[menu][menu_nodeLabelBlock]';
+  getBlockArguments ([
+      {'name': 'menu_id',      'text': true, 'required': true},
+      {'name': 'menu_node_id', 'text': true, 'required': true}
+    ],
+    context.element,
+    function (error, blockArguments) {
+      var menu = menu_MENUS [blockArguments.menu_id.trim ()];
+      if (!menu) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu "' + blockArguments.menu_id.trim () + '". The menu does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var node = menu.getNode (blockArguments.menu_node_id.trim ())
+      if (!node) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu node "' + blockArguments.menu_node_id.trim () + '". The leaf does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var element = node.getLabelElement ();
+      context.element.replaceWith (element);
+      done (null, element);
+  });
 }
 
 /*
@@ -294,14 +691,21 @@ function menu_nodeLabelBlock (context, done) {
   * done, a function that accepts two arguments:
     an Error object and a JQuery HTML Element.
 
-  context.element must contain a single text node
-  that represents a Menu Element ID.
+  context.element must be a DIV element that
+  contains two child elements.
+
+  * The first, must belong to the menu_id class
+    and contain a single text node representing
+    a menu ID.
+  * The second, must belong to the menu_node_id
+    class and contain a single text node
+    representing a menu node ID.
 
   menu_nodeLinkBlock:
 
   * loads the referenced menu element
-  * creates an HTML link element that represents
-    the menu element's title
+  * creates an HTML link element that links to
+    the menu node.
   * replaces context.element with the new element
   * and passes the new element to done.
 
@@ -309,57 +713,372 @@ function menu_nodeLabelBlock (context, done) {
   the error to done instead.
 */
 function menu_nodeLinkBlock (context, done) {
-  var element = menu_MENU.getNode (context.element.text ().trim ()).getLinkElement ();
-  context.element.replaceWith (element);
-  done (null, element);
+  var errorPrefix = '[menu][menu_nodeLinkBlock]';
+  getBlockArguments ([
+      {'name': 'menu_id',      'text': true, 'required': true},
+      {'name': 'menu_node_id', 'text': true, 'required': true}
+    ],
+    context.element,
+    function (error, blockArguments) {
+      var menu = menu_MENUS [blockArguments.menu_id.trim ()];
+      if (!menu) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu "' + blockArguments.menu_id.trim () + '". The menu does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var node = menu.getNode (blockArguments.menu_node_id.trim ())
+      if (!node) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu node "' + blockArguments.menu_node_id.trim () + '". The node does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var element = node.getLinkElement ();
+      context.element.replaceWith (element);
+      done (null, element);
+  });
 }
 
 /*
+  menu_nodeNextLabelBlock accepts two arguments:
+
+  * context, a Block Expansion Context
+  * done, a function that accepts two arguments:
+    an Error object and a JQuery HTML Element.
+
+  context.element must be a DIV element that
+  contains two child elements.
+
+  * The first, must belong to the menu_id class
+    and contain a single text node representing
+    a menu ID.
+  * The second, must belong to the menu_node_id
+    class and contain a single text node
+    representing a menu leaf ID.
+
+  menu_nodeNextLabelBlock:
+
+  * loads referenced menu element
+  * creates an HTML element that represents the
+    title of the next leaf in the referenced menu
+  * replaces context.element with the new element
+  * and passes the new element to done.
+
+  If an error occurs, menu_nodeNextLabelBlock
+  passes the error to done instead.
 */
 function menu_nodeNextLabelBlock (context, done) {
-  var element = menu_MENU.getNode (context.element.text ().trim ()).getNextLabelElement ();
-  context.element.replaceWith (element);
-  done (null, element);
+  var errorPrefix = '[menu][menu_nodeNextLabelBlock]';
+  getBlockArguments ([
+      {'name': 'menu_id',      'text': true, 'required': true},
+      {'name': 'menu_node_id', 'text': true, 'required': true}
+    ],
+    context.element,
+    function (error, blockArguments) {
+      var menu = menu_MENUS [blockArguments.menu_id.trim ()];
+      if (!menu) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu "' + blockArguments.menu_id.trim () + '". The menu does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var node = menu.getNode (blockArguments.menu_node_id.trim ())
+      if (!node) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu node "' + blockArguments.menu_node_id.trim () + '". The node does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var element = node.getNextLabelElement ();
+      context.element.replaceWith (element);
+      done (null, element);
+  });
 }
 
 /*
+  menu_nodeNextLinkBlock accepts two arguments:
+
+  * context, a Block Expansion Context
+  * done, a function that accepts two arguments:
+    an Error object and a JQuery HTML Element.
+
+  context.element must be a DIV element that
+  contains two child elements.
+
+  * The first, must belong to the menu_id class
+    and contain a single text node representing
+    a menu ID.
+  * The second, must belong to the menu_node_id
+    class and contain a single text node
+    representing a menu leaf ID.
+
+  menu_nodeNextLinkBlock:
+
+  * loads referenced menu element
+  * creates an HTML element that represents a
+    link to the next leaf in the referenced menu
+  * replaces context.element with the new element
+  * and passes the new element to done.
+
+  If an error occurs, menu_nodeNextLinkBlock
+  passes the error to done instead.
 */
 function menu_nodeNextLinkBlock (context, done) {
-  var element = menu_MENU.getNode (context.element.text ().trim ()).getNextLinkElement ();
-  context.element.replaceWith (element);
-  done (null, element);
+  var errorPrefix = '[menu][menu_nodeNextLinkBlock]';
+  getBlockArguments ([
+      {'name': 'menu_id',      'text': true, 'required': true},
+      {'name': 'menu_node_id', 'text': true, 'required': true}
+    ],
+    context.element,
+    function (error, blockArguments) {
+      var menu = menu_MENUS [blockArguments.menu_id.trim ()];
+      if (!menu) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu "' + blockArguments.menu_id.trim () + '". The menu does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var node = menu.getNode (blockArguments.menu_node_id.trim ())
+      if (!node) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu node "' + blockArguments.menu_node_id.trim () + '". The node does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var element = node.getNextLinkElement ();
+      context.element.replaceWith (element);
+      done (null, element);
+  });
 }
 
 /*
+  menu_nodeParentLabelBlock accepts two
+  arguments:
+
+  * context, a Block Expansion Context
+  * done, a function that accepts two arguments:
+    an Error object and a JQuery HTML Element.
+
+  context.element must be a DIV element that
+  contains two child elements.
+
+  * The first, must belong to the menu_id class
+    and contain a single text node representing
+    a menu ID.
+  * The second, must belong to the menu_node_id
+    class and contain a single text node
+    representing a menu node ID.
+
+  menu_nodeParentLabelBlock:
+
+  * loads referenced menu element
+  * creates an HTML element that represents the
+    title of the referenced node's parent
+  * replaces context.element with the new element
+  * and passes the new element to done.
+
+  If an error occurs, menu_leafParentLabelBlock
+  passes the error to done instead.
 */
 function menu_nodeParentLabelBlock (context, done) {
-  var element = menu_MENU.getNode (context.element.text ().trim ()).getParentLabelElement ();
-  context.element.replaceWith (element);
-  done (null, element);
+  var errorPrefix = '[menu][menu_nodeParentLabelBlock]';
+  getBlockArguments ([
+      {'name': 'menu_id',      'text': true, 'required': true},
+      {'name': 'menu_node_id', 'text': true, 'required': true}
+    ],
+    context.element,
+    function (error, blockArguments) {
+      var menu = menu_MENUS [blockArguments.menu_id.trim ()];
+      if (!menu) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu "' + blockArguments.menu_id.trim () + '". The menu does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var node = menu.getNode (blockArguments.menu_node_id.trim ())
+      if (!node) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu node "' + blockArguments.menu_node_id.trim () + '". The node does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var element = node.getParentLabelElement ();
+      context.element.replaceWith (element);
+      done (null, element);
+  });
 }
 
 /*
+  menu_nodeParentLinkBlock accepts two
+  arguments:
+
+  * context, a Block Expansion Context
+  * done, a function that accepts two arguments:
+    an Error object and a JQuery HTML Element.
+
+  context.element must be a DIV element that
+  contains two child elements.
+
+  * The first, must belong to the menu_id class
+    and contain a single text node representing
+    a menu ID.
+  * The second, must belong to the menu_node_id
+    class and contain a single text node
+    representing a menu node ID.
+
+  menu_nodeParentLinkBlock:
+
+  * loads referenced menu element
+  * creates an HTML element that represents a
+    link to the referenced node's parent
+  * replaces context.element with the new element
+  * and passes the new element to done.
+
+  If an error occurs, menu_nodeParentLinkBlock
+  passes the error to done instead.
 */
 function menu_nodeParentLinkBlock (context, done) {
-  var element = menu_MENU.getNode (context.element.text ().trim ()).getParentLinkElement ();
-  context.element.replaceWith (element);
-  done (null, element);
+  var errorPrefix = '[menu][menu_nodeParentLinkBlock]';
+  getBlockArguments ([
+      {'name': 'menu_id',      'text': true, 'required': true},
+      {'name': 'menu_node_id', 'text': true, 'required': true}
+    ],
+    context.element,
+    function (error, blockArguments) {
+      var menu = menu_MENUS [blockArguments.menu_id.trim ()];
+      if (!menu) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu "' + blockArguments.menu_id.trim () + '". The menu does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var node = menu.getNode (blockArguments.menu_node_id.trim ())
+      if (!node) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu node "' + blockArguments.menu_node_id.trim () + '". The node does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var element = node.getParentLinkElement ();
+      context.element.replaceWith (element);
+      done (null, element);
+  });
 }
 
 /*
+  menu_nodePreviousLabelBlock accepts two
+  arguments:
+
+  * context, a Block Expansion Context
+  * done, a function that accepts two arguments:
+    an Error object and a JQuery HTML Element.
+
+  context.element must be a DIV element that
+  contains two child elements.
+
+  * The first, must belong to the menu_id class
+    and contain a single text node representing
+    a menu ID.
+  * The second, must belong to the menu_node_id
+    class and contain a single text node
+    representing a menu node ID.
+
+  menu_nodePreviousLabelBlock:
+
+  * loads referenced menu element
+  * creates an HTML element that represents
+    the title of the previous leaf
+  * replaces context.element with the new element
+  * and passes the new element to done.
+
+  If an error occurs, menu_nodePreviousLabelBlock
+  passes the error to done instead.
 */
 function menu_nodePreviousLabelBlock (context, done) {
-  var element = menu_MENU.getNode (context.element.text ().trim ()).getPreviousLabelElement ();
-  context.element.replaceWith (element);
-  done (null, element);
+  var errorPrefix = '[menu][menu_nodePreviousLabelBlock]';
+  getBlockArguments ([
+      {'name': 'menu_id',      'text': true, 'required': true},
+      {'name': 'menu_node_id', 'text': true, 'required': true}
+    ],
+    context.element,
+    function (error, blockArguments) {
+      var menu = menu_MENUS [blockArguments.menu_id.trim ()];
+      if (!menu) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu "' + blockArguments.menu_id.trim () + '". The menu does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var node = menu.getNode (blockArguments.menu_node_id.trim ())
+      if (!node) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu node "' + blockArguments.menu_node_id.trim () + '". The node does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var element = node.getPreviousLabelElement ();
+      context.element.replaceWith (element);
+      done (null, element);
+  });
 }
 
 /*
+  menu_nodePreviousLinkBlock accepts two
+  arguments:
+
+  * context, a Block Expansion Context
+  * done, a function that accepts two arguments:
+    an Error object and a JQuery HTML Element.
+
+  context.element must be a DIV element that
+  contains two child elements.
+
+  * The first, must belong to the menu_id class
+    and contain a single text node representing
+    a menu ID.
+  * The second, must belong to the menu_node_id
+    class and contain a single text node
+    representing a menu leaf ID.
+
+  menu_nodePreviousLinkBlock:
+
+  * loads referenced menu element
+  * creates an HTML element that represents a
+    link to the previous leaf in the referenced
+    menu
+  * replaces context.element with the new element
+  * and passes the new element to done.
+
+  If an error occurs, menu_nodePreviousLinkBlock
+  passes the error to done instead.
 */
 function menu_nodePreviousLinkBlock (context, done) {
-  var element = menu_MENU.getNode (context.element.text ().trim ()).getPreviousLinkElement ();
-  context.element.replaceWith (element);
-  done (null, element);
+  var errorPrefix = '[menu][menu_nodePreviousLinkBlock]';
+  getBlockArguments ([
+      {'name': 'menu_id',      'text': true, 'required': true},
+      {'name': 'menu_node_id', 'text': true, 'required': true}
+    ],
+    context.element,
+    function (error, blockArguments) {
+      var menu = menu_MENUS [blockArguments.menu_id.trim ()];
+      if (!menu) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu "' + blockArguments.menu_id.trim () + '". The menu does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var node = menu.getNode (blockArguments.menu_node_id.trim ())
+      if (!node) {
+        var error = new Error (errorPrefix + ' Error: an error occured while trying to load menu node "' + blockArguments.menu_node_id.trim () + '". The node does not exist.');
+        strictError (error);
+        return done (error);
+      }
+
+      var element = node.getPreviousLinkElement ();
+      context.element.replaceWith (element);
+      done (null, element);
+  });
 }
 
 /*

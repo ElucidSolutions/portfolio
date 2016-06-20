@@ -46,7 +46,7 @@ MODULE_LOAD_HANDLERS.add (
             // VI. Cancel text to speech playback on page load.
             PAGE_LOAD_HANDLERS.add (
               function (id, done) {
-                responsiveVoice.cancel ();
+                responsiveVoice && responsiveVoice.cancel ();
                 done ();
             });
 
@@ -790,6 +790,9 @@ presentation_ButtonStepInstance.prototype.onComplete = function () {
 /*
   Accepts no arguments and enables tab focus on
   this step instance's focus element.
+
+  This function is be called when IntroJS
+  highlights this step instance.
 */
 presentation_ButtonStepInstance.prototype.onHighlight = function () {
   this.getFocusElement ().attr ('tabindex', 0);
@@ -848,21 +851,6 @@ presentation_InputStepInstance.prototype = Object.create (presentation_StepInsta
 /*
 */
 presentation_InputStepInstance.prototype.constructor = presentation_InputStepInstance;
-
-/*
-  Accepts no arguments, marks this step instance
-  as having been completed, updates the
-  nav element associated with this instance's
-  presentation instance, and removes this step
-  instance's element from the tab list.
-
-  This function is called when a user
-  completes this step instance. 
-*/
-presentation_InputStepInstance.prototype.onComplete = function () {
-  presentation_StepInstance.prototype.onComplete.call (this);
-  this.getFocusElement ().attr ('tabindex', -1);
-}
 
 /*
   Accepts no arguments and enables tab focus
@@ -1224,7 +1212,7 @@ presentation_PresentationInstance.prototype._createAudioToggleElement = function
         var checked = $(this).prop ('checked');
         presentation_AUDIO = checked
 
-        checked || responsiveVoice.cancel ();
+        checked || (responsiveVoice && responsiveVoice.cancel ());
 
         var stepInstance = self.getCurrentStepInstance ();
         if (stepInstance) {
@@ -1384,7 +1372,7 @@ presentation_PresentationInstance.prototype._createIntro = function () {
             $('.introjs-tooltip', presentationElement)
               .prepend (self.createExitButton ())
               .append (self.getMessageElement ())
-              .append (self.getAudioToggleElement ())
+              .append (responsiveVoice ? self.getAudioToggleElement () : null)
               .append (self.getNavElement ());
           }
 
@@ -1410,7 +1398,7 @@ presentation_PresentationInstance.prototype._createIntro = function () {
       })
     .onexit (
         function () {
-          responsiveVoice.cancel ();
+          responsiveVoice && responsiveVoice.cancel ();
 
           presentationElement.css ('background-image', 'url(' + self.presentation.getImage () + ')');
           presentationElement.removeClass ('presentation_active');
@@ -1593,6 +1581,13 @@ function presentation_createOverlayElement () {
 }
 
 /*
+  Accepts two arguments:
+
+  * type, a content type string
+  * and path, a string array
+
+  and returns a resource ID string that
+  references the content referenced by path.
 */
 function presentation_getId (type, path) {
   var uri = new URI ('').segmentCoded (type);
@@ -1632,5 +1627,5 @@ presentation_punctuate = function (htmlTranscript) {
   synthesizer.
 */
 presentation_speak = function (htmlTranscript) {
-  responsiveVoice.speak (presentation_punctuate (htmlTranscript));
+  responsiveVoice && responsiveVoice.speak (presentation_punctuate (htmlTranscript));
 }

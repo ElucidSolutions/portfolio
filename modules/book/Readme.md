@@ -51,7 +51,7 @@ MODULE_LOAD_HANDLERS.add (
         template_TEMPLATES.addTemplates (book_DATABASE.getTemplates ());
 
         // IV. Register the book menu.
-        menu_MENU = book_DATABASE.getMenu ();
+        menu_MENUS ['book'] = book_DATABASE.getMenu ();
 
         // V. Register the block handlers.
         block_HANDLERS.addHandlers ({
@@ -546,6 +546,9 @@ function book_getSnippet (text) {
 }
 
 /*
+  Accepts one argument: html, an HTML string;
+  and returns a new string in which all HTML
+  tags have been removed.
 */
 function book_stripHTMLTags (html) {
   return html.replace (/<[^>]*>/g, '');
