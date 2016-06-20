@@ -16,7 +16,6 @@
             </xs:restriction>
           </xs:simpleType>
         </xs:element>
-        <xs:element name="defaultId" type="xs:string" minOccurs="1" maxOccurs="1"/>
         <xs:element name="theme" type="xs:anyURI" minOccurs="1" maxOccurs="1"/>
         <xs:element name="modules" minOccurs="1" maxOccurs="1">
           <xs:complexType>
