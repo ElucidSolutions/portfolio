@@ -460,43 +460,140 @@ ul {
   Case Study feature.
 */
 .case_study {
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
   margin-top: 20px;
   border: solid 1px #979797; }
+  .case_study:after {
+    content: "";
+    display: table;
+    clear: both; }
   .case_study .case_study_content_section {
     font-family: OpenSans-Semibold; }
     .case_study .case_study_content_section .case_study_content_section_header {
-      margin: 20px auto 0px;
-      width: 80%; }
-      .case_study .case_study_content_section .case_study_content_section_header h1, .case_study .case_study_content_section .case_study_content_section_header h2, .case_study .case_study_content_section .case_study_content_section_header h3, .case_study .case_study_content_section .case_study_content_section_header h4, .case_study .case_study_content_section .case_study_content_section_header h5 {
-        color: #309DD2;
-        text-align: center; }
-    .case_study .case_study_content_section .case_study_content_section_body .case_study_content_section_body_lead_section {
-      margin: 20px auto 0px;
-      width: 90%; }
-    .case_study .case_study_content_section .case_study_content_section_body .case_study_content_section_body_links_section {
-      margin: 20px auto 0px;
-      width: 80%; }
-      .case_study .case_study_content_section .case_study_content_section_body .case_study_content_section_body_links_section .case_study_content_section_body_links_section_column {
-        display: inline-block;
-        width: 49%; }
-        .case_study .case_study_content_section .case_study_content_section_body .case_study_content_section_body_links_section .case_study_content_section_body_links_section_column .case_study_content_section_body_links_section_list_item_link {
-          color: #309DD2; }
-          .case_study .case_study_content_section .case_study_content_section_body .case_study_content_section_body_links_section .case_study_content_section_body_links_section_column .case_study_content_section_body_links_section_list_item_link a {
-            color: #309DD2; }
-    .case_study .case_study_content_section .case_study_content_section_footer {
-      margin: 20px auto 0px;
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+      float: left;
+      display: block;
+      margin-right: 2.35765%;
+      width: 65.88078%;
+      margin-left: 17.05961%;
+      margin-bottom: 20px;
+      margin-top: 20px;
       text-align: center; }
+      .case_study .case_study_content_section .case_study_content_section_header:after {
+        content: "";
+        display: table;
+        clear: both; }
+      .case_study .case_study_content_section .case_study_content_section_header:after {
+        content: "";
+        display: table;
+        clear: both; }
+      .case_study .case_study_content_section .case_study_content_section_header:last-child {
+        margin-right: 0; }
+      .case_study .case_study_content_section .case_study_content_section_header .case_study_content_section_header_lead {
+        float: left;
+        display: block;
+        margin-right: 2.35765%;
+        width: 31.76157%;
+        color: #309DD2; }
+        .case_study .case_study_content_section .case_study_content_section_header .case_study_content_section_header_lead:last-child {
+          margin-right: 0; }
+      .case_study .case_study_content_section .case_study_content_section_header .case_study_content_section_header_body {
+        float: left;
+        display: block;
+        margin-right: 2.35765%;
+        width: 65.88078%;
+        border-left: solid 1px black;
+        height: 100%; }
+        .case_study .case_study_content_section .case_study_content_section_header .case_study_content_section_header_body:last-child {
+          margin-right: 0; }
+    .case_study .case_study_content_section .case_study_content_section_body {
+      display: block; }
+      .case_study .case_study_content_section .case_study_content_section_body:after {
+        content: "";
+        display: table;
+        clear: both; }
+      .case_study .case_study_content_section .case_study_content_section_body .case_study_content_section_body_lead_section {
+        float: left;
+        display: block;
+        margin-right: 2.35765%;
+        width: 65.88078%;
+        margin-left: 17.05961%;
+        margin-bottom: 20px; }
+        .case_study .case_study_content_section .case_study_content_section_body .case_study_content_section_body_lead_section:last-child {
+          margin-right: 0; }
+      .case_study .case_study_content_section .case_study_content_section_body .case_study_content_section_body_links_section {
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        float: left;
+        display: block;
+        margin-right: 2.35765%;
+        width: 65.88078%;
+        margin-left: 17.05961%;
+        list-style: url("images/list-arrows.svg");
+        list-style-position: inside; }
+        .case_study .case_study_content_section .case_study_content_section_body .case_study_content_section_body_links_section:after {
+          content: "";
+          display: table;
+          clear: both; }
+        .case_study .case_study_content_section .case_study_content_section_body .case_study_content_section_body_links_section:last-child {
+          margin-right: 0; }
+        .case_study .case_study_content_section .case_study_content_section_body .case_study_content_section_body_links_section .case_study_content_section_body_links_section_column {
+          float: left;
+          display: block;
+          margin-right: 2.35765%;
+          width: 48.82117%; }
+          .case_study .case_study_content_section .case_study_content_section_body .case_study_content_section_body_links_section .case_study_content_section_body_links_section_column:last-child {
+            margin-right: 0; }
+          .case_study .case_study_content_section .case_study_content_section_body .case_study_content_section_body_links_section .case_study_content_section_body_links_section_column .case_study_content_section_body_links_section_list_item {
+            color: #309DD2;
+            margin-bottom: 20px; }
+            .case_study .case_study_content_section .case_study_content_section_body .case_study_content_section_body_links_section .case_study_content_section_body_links_section_column .case_study_content_section_body_links_section_list_item a {
+              color: #309DD2; }
+    .case_study .case_study_content_section .case_study_content_section_footer {
+      display: block;
+      margin: 0px auto 20px;
+      text-align: center; }
+      .case_study .case_study_content_section .case_study_content_section_footer:after {
+        content: "";
+        display: table;
+        clear: both; }
       .case_study .case_study_content_section .case_study_content_section_footer .case_study_content_section_footer_link_button {
         background-color: #309DD2;
         color: white;
         display: inline-block;
         padding: 5px 10px 5px 10px; }
   .case_study .case_study_screenshot_section {
-    margin: 20px auto 0px;
-    width: 90%; }
+    display: block;
+    float: left;
+    display: block;
+    margin-right: 2.35765%;
+    width: 65.88078%;
+    margin-left: 17.05961%; }
+    .case_study .case_study_screenshot_section:after {
+      content: "";
+      display: table;
+      clear: both; }
+    .case_study .case_study_screenshot_section:last-child {
+      margin-right: 0; }
     .case_study .case_study_screenshot_section img.case_study_screenshot_section_image {
       width: 100%; }
 
+@media screen and (max-width: 500px) {
+  .case_study .case_study_content_section .case_study_content_section_body .case_study_content_section_body_links_section .case_study_content_section_body_links_section_column {
+    float: left;
+    display: block;
+    margin-right: 2.35765%;
+    width: 100%; }
+    .case_study .case_study_content_section .case_study_content_section_body .case_study_content_section_body_links_section .case_study_content_section_body_links_section_column:last-child {
+      margin-right: 0; }
+    .case_study .case_study_content_section .case_study_content_section_body .case_study_content_section_body_links_section .case_study_content_section_body_links_section_column:nth-child(n) {
+      margin-right: 0; } }
 /*
   This stylesheet defines the styling for the
   Page Loading Overlay feature.

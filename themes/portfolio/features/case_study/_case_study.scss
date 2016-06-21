@@ -4,6 +4,7 @@
 */
 
 .case_study {
+  @include outer-container;
   margin-top: $default_small_margin;
   border:     solid 1px #979797;
 
@@ -11,31 +12,47 @@
     font-family: OpenSans-Semibold;
 
     .case_study_content_section_header {
-      margin: $default_small_margin auto 0px;
-      width:  80%;
+      @include outer-container;
+      @include row ();
+      @include span-columns(8);
+      @include shift(2);
+      margin-bottom: $default_small_margin;
+      margin-top:    $default_small_margin;
+      text-align:    center;
 
-      h1, h2, h3, h4, h5 {
-        color:       #309DD2;
-        text-align:  center;
+      .case_study_content_section_header_lead {
+        @include span-columns(4);
+        color:        #309DD2;
+      }
+
+      .case_study_content_section_header_body {
+        @include span-columns(8);
+        border-left: solid 1px black;
+        height:      100%;
       }
     }
 
     .case_study_content_section_body {
+      @include row ();
       .case_study_content_section_body_lead_section {
-        margin: $default_small_margin auto 0px;
-        width:  90%;
+        @include span-columns(8);
+        @include shift(2);
+        margin-bottom: $default_small_margin;
       }
 
       .case_study_content_section_body_links_section {
-        margin: $default_small_margin auto 0px;
-        width: 80%;
+        @include outer-container;
+        @include span-columns(8);
+        @include shift(2);
+        list-style:          url('images/list-arrows.svg');
+        list-style-position: inside;
 
         .case_study_content_section_body_links_section_column {
-          display: inline-block;
-          width:   49%;
+          @include span-columns(6);
 
-          .case_study_content_section_body_links_section_list_item_link {
-            color: #309DD2;
+          .case_study_content_section_body_links_section_list_item {
+            color:         #309DD2;
+            margin-bottom: $default_small_margin;
 
             a {
               color: #309DD2;
@@ -46,7 +63,8 @@
     }
 
     .case_study_content_section_footer {
-      margin:     $default_small_margin auto 0px;
+      @include    row ();
+      margin:     0px auto $default_small_margin;
       text-align: center;
 
       .case_study_content_section_footer_link_button {
@@ -59,11 +77,27 @@
   }
 
   .case_study_screenshot_section {
-    margin: $default_small_margin auto 0px;
-    width:  90%;
+    @include row ();
+    @include span-columns(8);
+    @include shift(2);
 
     img.case_study_screenshot_section_image {
       width: 100%;
+    }
+  }
+}
+
+@include media(max-width $medium_screen_width) {
+  .case_study {
+    .case_study_content_section {
+      .case_study_content_section_body {
+        .case_study_content_section_body_links_section {
+          .case_study_content_section_body_links_section_column {
+            @include span-columns(12);
+            @include omega(n);
+          }
+        }
+      }
     }
   }
 }

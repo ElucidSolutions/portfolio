@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="9px" height="10px" viewBox="0 0 9 10" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 3.8.3 (29802) - http://www.bohemiancoding.com/sketch -->
+    <title>list-arrows</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="portfolio-mockup" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="boxes-plus-copy" transform="translate(-189.000000, -556.000000)" fill="#0099D0">
+            <g id="1---eOffer-Guide-Group" transform="translate(42.000000, 371.000000)">
+                <g id="list" transform="translate(147.000000, 178.000000)">
+                    <g id="video-library">
+                        <g id="list-arrows" transform="translate(0.000000, 7.000000)">
+                            <g>
+                                <polygon id="Page-1" transform="translate(2.575000, 4.674756) scale(-1, 1) translate(-2.575000, -4.674756) " points="4.01171967 0 0 4.67412431 4.01171967 9.34951275 5.15006962 9.34951275 1.13834995 4.67412431 5.15006962 0"></polygon>
+                                <polygon id="Page-1-Copy" transform="translate(5.575000, 4.674756) scale(-1, 1) translate(-5.575000, -4.674756) " points="7.01171967 0 3 4.67412431 7.01171967 9.34951275 8.15006962 9.34951275 4.13834995 4.67412431 8.15006962 0"></polygon>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
