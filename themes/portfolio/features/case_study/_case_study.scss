@@ -14,45 +14,52 @@
     .case_study_content_section_header {
       @include outer-container;
       @include row ();
-      @include span-columns(8);
-      @include shift(2);
+      @include span-columns(10);
+      @include shift(1);
       margin-bottom: $default_small_margin;
       margin-top:    $default_small_margin;
       text-align:    center;
 
       .case_study_content_section_header_lead {
         @include span-columns(4);
-        color:        #309DD2;
+        font-weight: 300;
+        color:       #309DD2;
+        text-align:  right;
       }
 
       .case_study_content_section_header_body {
         @include span-columns(8);
-        border-left: solid 1px black;
-        height:      100%;
+        border-left:  solid 1px black;
+        font-weight:  600;
+        height:       100%; // Temporary patch
+        padding-left: 2.35%; // Manually match margin introduced by the Neat grid.
+        text-align:   left;
       }
     }
 
     .case_study_content_section_body {
       @include row ();
       .case_study_content_section_body_lead_section {
-        @include span-columns(8);
-        @include shift(2);
+        @include span-columns(10);
+        @include shift(1);
         margin-bottom: $default_small_margin;
+        text-align:    center;
       }
 
       .case_study_content_section_body_links_section {
         @include outer-container;
         @include span-columns(8);
         @include shift(2);
-        list-style:          url('images/list-arrows.svg');
-        list-style-position: inside;
+        list-style:    url('images/list-arrows.svg');
+        margin-bottom: $default_small_margin;
 
         .case_study_content_section_body_links_section_column {
           @include span-columns(6);
 
           .case_study_content_section_body_links_section_list_item {
             color:         #309DD2;
-            margin-bottom: $default_small_margin;
+            margin-bottom: 10px;
+            margin-left:   20px; // protect list item icon from being overlapped while maintaining correct wrap behavior.
 
             a {
               color: #309DD2;
@@ -68,10 +75,14 @@
       text-align: center;
 
       .case_study_content_section_footer_link_button {
-        background-color: #309DD2;
-        color:            white;
-        display:          inline-block; 
-        padding:          5px 10px 5px 10px;
+        background-color:    #309DD2;
+        background-image:    url('features/case_study/images/right-arrow.svg');
+        background-position: 93% 50%;
+        background-repeat:   no-repeat;
+        color:               white;
+        display:             inline-block; 
+        font-weight:         600;
+        padding:             5px 40px 5px 20px;
       }
     }
   }
@@ -82,7 +93,11 @@
     @include shift(2);
 
     img.case_study_screenshot_section_image {
-      width: 100%;
+      // Temporary patch to remove 5 px of whitespace under image.
+      position: relative;
+      top:      5px;
+
+      width:    100%;
     }
   }
 }
