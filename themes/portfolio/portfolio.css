@@ -6,6 +6,9 @@
   This stylesheet imports the libaries used by
   the Elucid Portfolio theme.
 */
+@import "https://fonts.googleapis.com/css?family=Open+Sans:300";
+@import "https://fonts.googleapis.com/css?family=Open+Sans:400";
+@import "https://fonts.googleapis.com/css?family=Open+Sans:600";
 html {
   box-sizing: border-box; }
 
