@@ -55,7 +55,7 @@
     <module name="book"             enabled="false"  url="modules/book/book.js"/>
     <module name="bxslider"         enabled="false"  url="modules/bxslider/bxslider.js"/>
     <module name="example"          enabled="false"  url="modules/example/example.js"/>
-    <module name="lightbox"         enabled="true"  url="modules/lightbox/lightbox.js"/>
+    <module name="lightbox"         enabled="false"  url="modules/lightbox/lightbox.js"/>
     <module name="menu"             enabled="false"  url="modules/menu/menu.js"/>
     <module name="presentation"     enabled="false"  url="modules/presentation/presentation.js"/>
     <module name="rate"             enabled="false"  url="modules/rate/rate.js"/>
