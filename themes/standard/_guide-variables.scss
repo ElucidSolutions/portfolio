@@ -1,0 +1,12 @@
+/* ORS Online Guide Specific Variables */
+
+/* Main Color Setting */
+
+$primary-color: $eoffer-orange;
+$primary-medium-color: $eoffer-medium-orange;
+$secondary-medium-color: $light_blue;
+$primary-gray: $light_gray;
+$nav-highlight-1: $eoffer-nav-highlight-1;
+$nav-highlight-2: $eoffer-nav-highlight-2;
+$darker_primary: darken($primary-color, 10%);
+$darkest_primary: darken($primary-color, 20%);

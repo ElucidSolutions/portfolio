@@ -32,6 +32,7 @@
     <xs:choice maxOccurs="unbounded">
       <xs:element name="section" type="sectionType" minOccurs="0"/>
       <xs:element name="page" type="pageType" minOccurs="0"/>
+      <xs:element name="link" type="linkType" minOccurs="0"/>      
     </xs:choice>
   </xs:complexType>
 
@@ -52,4 +53,13 @@
       <xs:element name="body"  type="xs:string" minOccurs="1" maxOccurs="1"/>
     </xs:all>
   </xs:complexType>
+
+  <!-- Define the link element type -->
+  <xs:complexType name="linkType">
+    <xs:all>
+      <xs:element name="name"  type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="title" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="pageId"  type="xs:anyURI" minOccurs="1" maxOccurs="1"/>
+    </xs:all>
+  </xs:complexType>  
 </xs:schema>

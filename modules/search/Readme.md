@@ -5,27 +5,36 @@ Global Variables
 ----------------
 
 ```javascript
-/*
-*/
+// Specifies the search database file
 var search_DATABASE_URL = 'modules/search/database.xml';
 
-/*
+/* 
+  Empty associative array to hold items from
+  database
 */
 var search_DATABASE = {};
 
-/*
+/* 
+  Empty associative array to hold search
+  interfaces
 */
 var search_INTERFACES = {};
 
-/*
+/* 
+  Empty associative array to hold search sources
+  (videos, books, global, etc. See setID tags in
+  database.xml)
 */
 var search_SOURCES = {};
 
-/*
+/* 
+  Empty associative array to hold search entries
 */
 var search_ENTRIES = {};
 
 /*
+  Empty associative array to hold json files for
+  Lunr (see lunrIndexURL tags in database.xml)
 */
 var search_LUNR_INDICES = {};
 ```
@@ -35,22 +44,26 @@ Load Event Handler
 
 ```javascript
 /*
+  The module's load event handler. Accepts one
+  argument, done, a function; loads the libraries
+  and search databases; registers the block and
+  page handlers; and calls done.
 */
 MODULE_LOAD_HANDLERS.add (
   function (done) {
-    // II. Load libraries.
+    // I. Load libraries.
     loadScript ('modules/search/lib/lunr/lunr.js',
       function (error) {
         if (error) { return done (error); }
 
-        // III. Load the search database.
+        // II. Load the search database.
         search_loadDatabase (search_DATABASE_URL,
           function (error, database) {
             if (error) { return done (error); }
 
             search_DATABASE = database;
 
-            // IV. Register the block handlers.
+            // III. Register the block handlers.
             block_HANDLERS.addHandlers ({
               search_filter_block:     search_filterBlock,
               search_form_block:       search_formBlock,
@@ -61,7 +74,7 @@ MODULE_LOAD_HANDLERS.add (
               search_no_results_block: 'modules/search/templates/search_no_results_block.html'
             });
 
-            // V. Register the page handlers.
+            // IV. Register the page handlers.
             page_HANDLERS.add ('search_page_block', 'modules/search/templates/search_page.html');
 
             done (null);
@@ -75,6 +88,22 @@ Block Handlers
 
 ```javascript
 /*
+  Accepts three arguments:
+
+  * context, a Block Expansion Context 
+  * done, a function that accepts a JQuery
+    HTML Element
+  * and expand, a function that accepts a JQuery
+    HTML Element and expands any blocks embedded
+    within the element
+
+  context.element must contain a single text node
+  that represents a Search Interface ID.
+
+  Loads search interface and replaces 
+  context.element with the filter element. If an 
+  error occurs, that error is passed to done.
+  If no error, calls done and then expand.
 */
 function search_filterBlock (context, done, expand) {
   var interface = search_INTERFACES [context.element.text ()];
@@ -127,19 +156,36 @@ function search_formBlock (context, done) {
 }
 
 /*
+  Accepts two arguments:
+  * context, a Block Expansion Context
+  * one, a function that accepts two arguments:
+   an Error object and a JQuery HTML Element
+
+  context.element must contain a text node that
+  represents an index name.
+
+  search_IndexBlock loads the search database for
+  the index given by context.element.text (),
+  generates a Lunr index from that database, and
+  creates an HTML Element that replaces 
+  context.element and is passed to done.
 */
 function search_indexBlock (context, done) {
   var indexName = context.element.text ();
+
+  // I. Load search database
   var index = search_DATABASE [indexName];
   if (!index) {
     var error = new Error ('[search][search_indexBlock] Error: The "' + indexName + '" index does not exist.');
     strictError (error);
     return done (error);
   }
+  // II. Generate lunr index
   index.getLunrIndex (
     function (error, lunrIndex) {
       if (error) { done (error); }
 
+      // III. Create Lunr index element
       var element = $('<div></div>')
         .addClass ('search_index')
         .append ($('<div></div>')
@@ -149,6 +195,7 @@ function search_indexBlock (context, done) {
           .addClass ('search_lunr_index')
           .text (JSON.stringify (lunrIndex.toJSON ())));
 
+      // IV. Replace context.element
       context.element.replaceWith (element);
       done (null, element);
   }); 
@@ -300,6 +347,15 @@ Auxiliary Functions
 
 ```javascript
 /*
+  Accepts two arguments:
+  * name, a string that represents a Search Interface ID
+  * source, the name of a search source
+
+  Returns a strict error if search_SOURCES already
+  has a value assigned to the given name.
+  Otherwise adds the source to the search_SOURCES
+  variable, associated with the key of name, and
+  returns undefined.
 */
 function search_registerSource (name, source) {
   if (search_SOURCES [name]) {
@@ -314,6 +370,14 @@ Database
 
 ```javascript
 /*
+  Accepts two arguments:
+  * url, the location of the database XML file
+  * done, a function that accepts an Error
+    object and a JQuery HTML Element
+
+  Loads and parses the search database. Returns
+  undefined.
+
 */
 function search_loadDatabase (url, done) {
   $.ajax (url, {
@@ -330,6 +394,11 @@ function search_loadDatabase (url, done) {
 }
 
 /*
+  Accepts one argument, databaseElement, the XML
+  database document. Creates a search_Index
+  object from each lunrIndexURL element and adds
+  it to the database associative array. Returns
+  database.
 */
 function search_parseDatabase (databaseElement) {
   var database = {};
@@ -352,6 +421,13 @@ Index
 
 ```javascript
 /*
+  Accepts two arguments:
+  * lunrIndexURL, a string representing the json
+    URL of an index
+  * setIds, an array identifying the data
+    included in the index
+
+  and returns a search_Index object.
 */
 function search_Index (lunrIndexURL, setIds) {
   this.lunrIndexURL = lunrIndexURL;
@@ -359,6 +435,12 @@ function search_Index (lunrIndexURL, setIds) {
 }
 
 /*
+  Accepts one argument, done, a function that
+  accepts two arguments: an Error object and a
+  JQuery HTML Element. Generates a lunrIndex 
+  value if the search_Index instance doesn't
+  have one, passes that result to done, and
+  passes done to createLunrIndex.
 */
 search_Index.prototype.getLunrIndex = function (done) {
   if (this.lunrIndex) {
@@ -378,6 +460,14 @@ search_Index.prototype.getLunrIndex = function (done) {
 }
 
 /*
+  Accepts one argument, done, a function that
+  accepts two arguments: an Error object and a
+  JQuery HTML Element. Generates a lunrIndex
+  value and attaches it to the search_Index
+  instance.
+
+  If an error occurs, passes it to done and
+  returns done. Otherwise returns undefined.
 */
 search_Index.prototype.createLunrIndex = function (done) {
   var self = this;
@@ -391,22 +481,45 @@ search_Index.prototype.createLunrIndex = function (done) {
 }
 
 /*
+  Accepts one argument, done, a function that
+  accepts two arguments: an Error object and a
+  JQuery HTML Element. Generates an array of
+  search index entries and attaches them to the
+  search_Index instance.
+
+  Returns done if this.entries exists, or if an
+  error occurs. Otherwise calls done.
 */
 search_Index.prototype.getEntries = function (done) {
+  // I. If this.entries exists, return done
   if (this.entries) {
     return done (null, this.entries);
   }
   var self = this;
+
+  // II. If not, generate entries
   search_getSetsEntries (this.setIds,
     function (error, entries) {
+      /// III. Send error to done and return
       if (error) { return done (error); }
 
       self.entries = entries;
+
+      // IV. Send new entries to done
       done (null, entries);
   });
 }
 
 /*
+  Accepts two arguments: 
+  * url, a string
+  * done, a function that accepts two arguments:
+    an Error object and a JQuery HTML Element
+
+  Runs an Ajax call for the Lunr index file.
+  Calls done when finished, passing an error if
+  one occurs and the retrieved json file if not.
+ 
 */
 function search_loadLunrIndex (url, done) {
   $.get (url,
@@ -428,12 +541,19 @@ Entry
 
 ```javascript
 /*
+  Accepts one argument, id, string. Returns
+  a search_Entry object.
 */
 function search_Entry (id) {
   this.id = id;
 }
 
 /*
+  Accepts one argument, done, a function that
+  accepts two arguments: an Error object and a 
+  JQuery HTML Element. Generates a jQuery HTML
+  Object representing a search result, and passes
+  it to done.
 */
 search_Entry.prototype.getResultElement = function (done) {
   done (null, $('<li></li>')
@@ -445,6 +565,13 @@ search_Entry.prototype.getResultElement = function (done) {
 }
 
 /*
+  Accepts two arguments:
+  * entries, an array
+  * done, a function that accepts two arguments:
+    an Error object and a JQuery HTML Element
+
+  Generates jQuery HTML Objects representing the
+  result entries, and calls done.
 */
 function search_getEntriesResultElements (entries, done) {
   async.mapSeries (entries,
@@ -461,6 +588,12 @@ Interface
 
 ```javascript
 /*
+  Accepts three arguments:
+  * index, a string
+  * start, a ninteger
+  * num, an integer
+
+  and returns a search_Interface object.
 */
 function search_Interface (index, start, num) {
   this.index               = index;
@@ -472,6 +605,13 @@ function search_Interface (index, start, num) {
 }
 
 /*
+  Accepts two arguments:
+  * query, a string
+  * done, a function that accepts two arguments:
+    an Error object and a JQuery HTML Element
+
+  Searches the lunrIndex with the given query,
+  and sends done to callSearchEventHandlers.
 */
 search_Interface.prototype.search = function (query, done) {
   this.query = query;
@@ -486,12 +626,28 @@ search_Interface.prototype.search = function (query, done) {
 }
 
 /*
+  Accepts one argument, done, a function that 
+  accepts two arguments: an Error object and a 
+  JQuery HTML Element. Calls searchEventHandlers
+  and then done.
 */
 search_Interface.prototype.callSearchEventHandlers = function (done) {
   async.series (this.searchEventHandlers, done);
 }
 
 /*
+  Accepts two arguments: 
+  * done, a function that accepts two arguments:
+    an Error object and a JQuery HTML Element
+  * expand, a function that accepts a JQuery
+    HTML Element and expands any blocks embedded
+    within the element
+
+  Opens the filter element and appends the search
+  results. This function also registers
+  a search event handler that updates the filter
+  element. Passes the filter element, with the
+  appended results, to done.
 */
 search_Interface.prototype.getFilterElement = function (done, expand) {
   var filterElement = $('<ol></ol>').addClass ('search_filter');
@@ -502,13 +658,13 @@ search_Interface.prototype.getFilterElement = function (done, expand) {
       if (error) { return done (error); }
 
       self.searchEventHandlers.push (
-	function (done) {
-	  self.getFilterElements (
-	    function (error, filterElements) {
+      	function (done) {
+      	  self.getFilterElements (
+      	    function (error, filterElements) {
               if (error) { return done (error); }
 
-	      expand (filterElement.empty ().append (resultElements), done);
-	  });
+    	      expand (filterElement.empty ().append (resultElements), done);
+    	  });
       });
 
       done (null, filterElement.append (resultElements));
@@ -516,6 +672,10 @@ search_Interface.prototype.getFilterElement = function (done, expand) {
 }
 
 /*
+  Accepts one argument, done, a function that 
+  accepts two arguments: an Error object and a 
+  JQuery HTML Element. Looks up the search results
+  for a query and passes done to getResultElements.
 */
 search_Interface.prototype.getFilterElements = function (done) {
   if (!this.query) {
@@ -538,7 +698,7 @@ search_Interface.prototype.getFilterElements = function (done) {
     HTML Element and expands any blocks embedded
     within the element
 
-  creates an JQuery HTML Element that represents
+  Creates an JQuery HTML Element that represents
   this interface's search results and passes the
   element to done. This function also registers
   a search event handler that updates the search
@@ -582,14 +742,14 @@ search_Interface.prototype.getResultsElement = function (done, expand) {
 }
 
 /*
-  Accepts on argument:
-
+  Accepts one argument:
   * done, a function that accepts a single JQuery
     HTML Element
 
-  gets the current search results, creates
+  Gets the current search results, creates
   elements that represent these search results,
-  and passes those results to done.
+  and passes those results to 
+  search_getEntriesResultElements.
 */
 search_Interface.prototype.getResultElements = function (done) {
   var self = this;
@@ -602,6 +762,11 @@ search_Interface.prototype.getResultElements = function (done) {
 }
 
 /*
+  Accepts one argument:
+  * done, a function that accepts a single JQuery
+    HTML Element
+
+  Returns the entry for each item gathered by getResults.
 */
 search_Interface.prototype.getResultEntries = function (done) {
   var self = this;
@@ -622,6 +787,9 @@ search_Interface.prototype.getResultEntries = function (done) {
 }
 
 /*
+  Accepts no arguments. Returns an array of results,
+  a subsection of the this.results based on the 
+  instance's start and num values.
 */
 search_Interface.prototype.getResults = function () {
   return this.results.slice (this.start, this.start + this.num);
@@ -633,6 +801,9 @@ Lunr
 
 ```javascript
 /*
+  Accepts one argument, entries, an array of ??objects??.
+  Returns index, a Lunr object that catalogues 
+  search results.
 */
 function search_createLunrIndex (entries) {
   var index = lunr (
@@ -651,6 +822,10 @@ function search_createLunrIndex (entries) {
 }
 
 /*
+  Accepts one argument, entries, an array 
+  representing search result entries. Returns
+  names, an array of the names of all the entries
+  given.
 */
 function search_getFieldNames (entries) {
   var names = [];
@@ -670,6 +845,15 @@ function search_getFieldNames (entries) {
 }
 
 /*
+  Accepts two arguments:
+  * setIds, an array of strings that is a value
+    of the search_Index object
+  * done, a function that accepts two arguments:
+    an Error object and a JQuery HTML Element
+
+  Looks up the entries associated with a setId
+  and pushes them into entries. Passes those
+  entries into next, and then calls done.
 */
 function search_getSetsEntries (setIds, done) {
   async.reduce (setIds, [],
@@ -687,14 +871,27 @@ function search_getSetsEntries (setIds, done) {
 }
 
 /*
+  Accepts two arguments:
+  * setId, a string value from the 
+    search_Index.setIds array
+  * done, a function that accepts two arguments:
+    an Error object and a JQuery HTML Element
+
+    Sends setName and done to source.
 */
 function search_getSetEntries (setId, done) {
   var errorMsg = '[search][search_getSetEntries] Error: an error occured while trying get entries from search set "' + setId + '".';
 
+  /*
+    I. If a value with the key setId has already
+    been added to search_ENTRIES, pass it to done
+    and return done 
+  */
   if (search_ENTRIES [setId]) {
     return done (null, search_ENTRIES [setId]);
   }
 
+  // II. If not, create a URI path from setId
   var path = new URI (setId).segmentCoded ();
   if (path.length < 1) {
     var error = new Error (errorMsg);
@@ -702,7 +899,13 @@ function search_getSetEntries (setId, done) {
     return done (error);
   }
 
+  // III. Get the first value from the path 
   var sourceName = path [0];
+
+  /*
+    IV. Find the search_SOURCES function 
+    associated with the sourceName key
+  */
   var source = search_SOURCES [sourceName];
   if (!source) {
     var error = new Error (errorMsg);
@@ -710,11 +913,23 @@ function search_getSetEntries (setId, done) {
     return done (error);
   }
 
+  /*
+    V. Assign setName to the second value of path
+    or null if it doesn't exist
+  */
   var setName = path.length > 1 ? path [1] : null;
+
+  // VI. Call source
   source (setName, done);
 }
 
 /*
+  Accepts two arguments:
+  * entries, an array of objects
+  * id, a string
+
+  Iterates through the entries array, and returns
+  the entry that matches the given id.
 */
 function search_getEntry (entries, id) {
   for (var i = 0; i < entries.length; i ++) {

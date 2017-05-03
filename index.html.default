@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Lucidity</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+
+    <!-- Load the current theme's stylesheet -->
+    <link href="themes/lucidity/lucidity.css" rel="stylesheet"/>
+
+    <!-- Import Libraries -->
+    <script src="lib/async/dist/async.js"></script>
+    <script src="lib/jquery/jquery.js"></script>
+    <script src="lib/jquery-getCSS/jquery.getCSS.js"></script>
+    <script src="lib/qunit/qunit.js"></script>
+    <script>
+      // Prevent unit tests from executing.
+      QUnit.config.autostart = false;
+    </script>
+    <script src="lib/uri/uri.js"></script>
+
+    <!-- Load the Core Module -->
+    <script src="modules/core/core.js"></script>
+  </head>
+  <body id="top">
+    <div id="overlay">
+      <img src="themes/lucidity/images/bx_loader.gif" alt="Loading..."/>
+    </div>
+    <div class="page_block"></div>
+    <div id="back_to_top"><a href="#">Back To Top</a></div>
+    <div id="footer">
+      <p>Powered by Lucidity</p>
+    </div>
+  </body>
+</html>

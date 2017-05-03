@@ -52,7 +52,7 @@ MODULE_LOAD_HANDLERS.add (
         if (error) {
           var error = new Error ('[analytics] Error: an error occured while trying to load the Analytics module.');
           strictError (error);
-          done (error);
+          done (null);
         }
 
         // II. Load Google Analytics.
@@ -70,7 +70,7 @@ MODULE_LOAD_HANDLERS.add (
           a.async = 1;
           a.src = g;
           m.parentNode.insertBefore (a,m)
-        })(window,document,'script','http://www.google-analytics.com/analytics.js','ga');
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
         // III. Create the Property Tracker. 
         ga('create', settings.pageVisitPropertyId, 'auto');
@@ -139,7 +139,8 @@ function analytics_parseSettings (doc) {
 }
 ```
 
-## Analytics Settings Document Schema
+Analytics Settings Document Schema
+----------------------------------
 
 Analytics Settings Documents must conform to the following XML schema. This schema can be found here: [settings.xsd](#Analytics Settings Document Schema "save:").
 
@@ -157,7 +158,8 @@ Analytics Settings Documents must conform to the following XML schema. This sche
 </xs:schema>
 ``` 
 
-## Example Settings.xml
+Example Settings.xml
+--------------------
 
 An example settings.xml file is presented below. This example can be found here: [settings.xml.example](#Example Settings.xml "save:").
 
@@ -168,7 +170,8 @@ An example settings.xml file is presented below. This example can be found here:
 </settings>
 ```
 
-## Generating Source Files
+Generating Source Files
+-----------------------
 
 You can generate the Analytics module's source files using [Literate Programming](https://github.com/jostylr/literate-programming), simply execute:
 `literate-programming Readme.md`

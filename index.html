@@ -17,6 +17,11 @@
     <script src="lib/jquery-getCSS/jquery.getCSS.js"></script>
     <script src="lib/uri/uri.js"></script>
 
+    <script src="lib/qunit/qunit.js"></script>
+    <script>
+      QUnit.config.autostart = false;
+    </script>
+
     <!-- Load the Core Module -->
     <script src="modules/core/core.js"></script>
   </head>
@@ -25,6 +30,10 @@
       <img src="themes/lucidity/images/bx_loader.gif" alt="Loading..."/>
     </div>
     <div id="page">
+      <div class="unittests">
+        <div id="qunit"></div>
+        <div id="qunit-fixture"></div>
+      </div>
       <div id="page_header">
         <div id="page_header_content">
           <div id="page_header_title">

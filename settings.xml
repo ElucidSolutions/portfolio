@@ -18,29 +18,51 @@
   <errorMode>nonstrict</errorMode>
 
   <!--
+    runUnittests indicates whether Lucidity should run
+    its unit tests or not. If true, QUnit runs
+    once the module load handlers are all ready, and
+    the app load handlers do not execute. If false, 
+    the app load handlers execute normally.
+  -->
+  <runUnittests>false</runUnittests>
+
+  <!--
+    The theme element gives the location of the CSS
+    file that defines the site's theme. Themes are
+    represented by directories within /themes. Every
+    theme directory contains a CSS file named
+    /themes/THEME NAME/THEME NAME.css.
+  -->
+  <theme>themes/standard/standard.css</theme>
+
+  <!--
     The modules element contains a list of all of the
     modules installed on the system and whether or
     not they have been enabled or disabled.
   -->
   <modules>
-    <module name="block"            enabled="true"  url="modules/block/block.js"/>
-    <module name="page"             enabled="true"  url="modules/page/page.js"/>
+    <!-- level 1 modules -->
+    <module name="block"            enabled="true" url="modules/block/block.js"/>
+    <module name="page"             enabled="true" url="modules/page/page.js"/>
 
-    <module name="search"           enabled="false"  url="modules/search/search.js"/>
+    <!-- level 2 modules -->
+    <module name="search"           enabled="true"  url="modules/search/search.js"/>
 
-    <module name="article"          enabled="false"  url="modules/article/article.js"/>
-    <module name="analytics"        enabled="true"  url="modules/analytics/analytics.js"/>
+    <!-- level 3 modules -->
+    <module name="accordion"        enabled="false" url="modules/accordion/accordion.js"/>
+    <module name="article"          enabled="false" url="modules/article/article.js"/>
+    <module name="analytics"        enabled="true" url="modules/analytics/analytics.js"/>
     <module name="book"             enabled="false"  url="modules/book/book.js"/>
     <module name="bxslider"         enabled="false"  url="modules/bxslider/bxslider.js"/>
-    <module name="embedded_video"   enabled="false"  url="modules/embedded_video/embedded_video.js"/>
     <module name="example"          enabled="false"  url="modules/example/example.js"/>
     <module name="lightbox"         enabled="true"  url="modules/lightbox/lightbox.js"/>
     <module name="menu"             enabled="false"  url="modules/menu/menu.js"/>
-    <module name="presentation"     enabled="false" url="modules/presentation/presentation.js"/>
+    <module name="presentation"     enabled="false"  url="modules/presentation/presentation.js"/>
     <module name="rate"             enabled="false"  url="modules/rate/rate.js"/>
+    <module name="select"           enabled="false" url="modules/select/select.js"/>
     <module name="sidr"             enabled="false"  url="modules/sidr/sidr.js"/>
     <module name="template"         enabled="false"  url="modules/template/template.js"/>
-    <module name="video"            enabled="false"  url="modules/video/video.js"/>
+    <module name="video"            enabled="false" url="modules/video/video.js"/>
     <module name="video_library"    enabled="false" url="modules/video_library/video_library.js"/>
   </modules>
 </settings>

@@ -5,10 +5,10 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element name="presentation" type="presentationType" minOccurs="0" maxOccurs="unbounded">
-          <xs:unique name="uniquePresentationName">
+          <xs:key name="uniquePresentationName">
             <xs:selector xpath="presentation"/>
             <xs:field xpath="@name"/>
-          </xs:unique>
+          </xs:key>
         </xs:element>
       </xs:sequence>
     </xs:complexType>
@@ -34,10 +34,10 @@
         </xs:simpleType>
       </xs:element>
       <xs:element name="steps" type="stepsType" minOccurs="1" maxOccurs="1">
-        <xs:unique name="uniqueStepName">
-          <xs:selector xpath="blankStep|inputStep"/>
+        <xs:key name="uniqueStepName">
+          <xs:selector xpath="blankStep|buttonStep|inputStep|testStep"/>
           <xs:field xpath="name"/>
-        </xs:unique>
+        </xs:key>
       </xs:element>
     </xs:all>
   </xs:complexType>
@@ -62,9 +62,11 @@
         <xs:simpleType>
           <xs:restriction base="xs:string">
             <xs:enumeration value="bottom"/>
+            <xs:enumeration value="floating"/>
             <xs:enumeration value="left"/>
             <xs:enumeration value="right"/>
             <xs:enumeration value="top"/>
+            <xs:enumeration value="top-middle-aligned"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
@@ -95,6 +97,18 @@
             <xs:pattern value="[0-9]+px"/>
           </xs:restriction>
         </xs:simpleType>
+      </xs:element>
+      <xs:element name="previousInputViews" minOccurs="1" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="previousInputView" type="previousInputViewType" minOccurs="0" maxOccurs="unbounded">
+              <xs:keyref name="previousInputViewInputStepId" refer="uniqueStepName">
+                <xs:selector xpath="inputStep"/>
+                <xs:field xpath="@name"/>
+              </xs:keyref>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
       </xs:element>
     </xs:sequence>
   </xs:complexType>
@@ -140,6 +154,41 @@
             <xs:element name="onSelect" type="xs:string" minOccurs="1" maxOccurs="1"/>
           </xs:sequence>
         </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Defines the Previous Input View element type. -->
+  <xs:complexType name="previousInputViewType">
+    <xs:sequence>
+      <xs:element name="inputStepName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="top" minOccurs="1" maxOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]+px"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="left" minOccurs="1" maxOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]+px"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="width" minOccurs="1" maxOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]+px"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="height" minOccurs="1" maxOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]+px"/>
+          </xs:restriction>
+        </xs:simpleType>
       </xs:element>
     </xs:sequence>
   </xs:complexType>

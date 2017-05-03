@@ -81,20 +81,17 @@ function video_playerBlock (context, done) {
     player.dispose ();
   }
 
-  videojs (playerElementId, {
-      autoplay: true,
-      preload: 'metadata'
-    }, function () {
-      video_PLAYERS [playerElementId] = this;
+  videojs (playerElementId, {autoplay: true}, function () {
+    video_PLAYERS [playerElementId] = this;
 
-      var handlers = video_LOAD_HANDLERS [playerElementId];
-      if (handlers) {
-        for (var i = 0; i < handlers.length; i ++) {
-          var handler = handlers [i];
-          handler (this);
-        }
+    var handlers = video_LOAD_HANDLERS [playerElementId];
+    if (handlers) {
+      for (var i = 0; i < handlers.length; i ++) {
+        var handler = handlers [i];
+        handler (this);
       }
-      done (null);
+    }
+    done (null);
   });
 }
 

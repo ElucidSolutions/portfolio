@@ -27,7 +27,7 @@ MODULE_LOAD_HANDLERS.add (
         if (error) {
           var error = new Error ('[analytics] Error: an error occured while trying to load the Analytics module.');
           strictError (error);
-          done (error);
+          done (null);
         }
 
         // II. Load Google Analytics.
@@ -45,7 +45,7 @@ MODULE_LOAD_HANDLERS.add (
           a.async = 1;
           a.src = g;
           m.parentNode.insertBefore (a,m)
-        })(window,document,'script','http://www.google-analytics.com/analytics.js','ga');
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
         // III. Create the Property Tracker. 
         ga('create', settings.pageVisitPropertyId, 'auto');

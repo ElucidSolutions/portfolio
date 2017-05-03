@@ -14,7 +14,13 @@
             <title><![CDATA[Example Page]]></title>
             <body><![CDATA[This is an example page.]]></body>
           </page>
+          <link>
+            <name>example_link</name>
+            <title><![CDATA[Example Link]]></title>
+            <pageId>book_page_page/modules%2Fbook%2Fdatabase.xml.example/example_book/example_section/example_page</pageId>
+          </link>          
         </content>
+      </section>
     </content>
   </book>
 </books>

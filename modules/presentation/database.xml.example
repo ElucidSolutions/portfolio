@@ -18,6 +18,7 @@
         <left>500px</left>
         <width>0px</width>
         <height>0px</height>
+        <previousInputViews/>
       </blankStep>
       <inputStep>
         <name>3_type_a_manufacturer_part_number</name>
@@ -32,6 +33,7 @@
         <left>128px</left>
         <width>160px</width>
         <height>21px</height>
+        <previousInputViews/>
         <expression><![CDATA[^[a-zA-Z0-9]{1,40}$]]></expression>
         <errorAlert>ERROR: There is a 40 character limit and only alphanumeric characters are allowed.</errorAlert>
       </inputStep>
@@ -47,6 +49,15 @@
         <left>414px</left>
         <width>147px</width>
         <height>21px</height>
+        <previousInputViews>
+          <previousInputView>
+            <inputStepName>3_type_a_manufacturer_part_number</inputStepName>
+            <top>232px</top>
+            <left>128px</left>
+            <width>160px</width>
+            <height>21px</height>
+          </previousInputView>
+        </previousInputViews>
       </buttonStep>
       <testStep>
         <name>12_test_your_knowledge</name>
@@ -60,6 +71,7 @@
         <left>327px</left>
         <width>330px</width>
         <height>134px</height>
+        <previousInputViews/>
         <options>
           <option>
             <label><![CDATA[True]]></label>

@@ -10,6 +10,9 @@ The module is defined by article.js. The introduction to this file reads:
   The Article module displays articles stored
   within an XML database file.
 */
+
+// Declares the QUnit test module.
+QUnit.module ('Article');
 ```
 
 ### Global Variables
@@ -103,12 +106,29 @@ function article_loadSettings (url, done) {
       done (null, article_parseSettings (doc));
     },
     error: function (request, status, error) {
-      var error = new Error ('[article][article_loadSettings] Error: an error occured while trying to load the Article module's settings.xml file from "' + url + '". ' + error);
+      var error = new Error ('[article][article_loadSettings] Error: an error occured while trying to load the Article module\'s settings.xml file from "' + url + '". ' + error);
       strictError (error);
       done (error);
     }
   });
 }
+
+/* 
+  Unittests for article_loadSettings. 
+
+  Confirms that loadSettings can load and parse
+  a settings file without throwing an error.
+*/
+QUnit.test ('article_loadSettings', function (assert) {
+  assert.expect (3);
+  var done = assert.async ();
+  article_loadSettings ('modules/article/settings.xml.default', function (error, settings) {
+    assert.ok (settings, 'article_loadSettings can load the current settings file');
+    assert.notOk (error, 'article_loadSettings does not throw an error');    
+    assert.strictEqual (settings && settings.articles, 'modules/article/database.xml', 'article_parseSettings correctly parsed the articles parameter');
+    done ();
+  })
+})
 
 /*
   article_parseSettings accepts an XML Document
@@ -158,10 +178,38 @@ function article_loadArticles (url, done) {
   });
 }
 
+/* 
+  Unittests for article_loadArticles.
+
+  Confirm that loadArticles can load and parse
+  the article database without error.
+*/
+QUnit.test ('article_loadArticles', function (assert) {
+  assert.expect (3);
+  var done = assert.async ();
+  article_loadArticles ('modules/article/database.xml.default', function (error, articles) {
+    assert.ok (articles, 'article_loadArticles can load the current database');
+    assert.notOk (error, 'article_loadArticles does not throw an error'); 
+    var articleId = 'article_article_page/example-article';
+    var article = articles && articles [articleId];
+
+    assert.ok (article &&
+      article.id === articleId &&
+      article.title === 'Example Article' &&
+      article.date === '2014-02-27' &&
+      article.author === 'Larry D. Lee Jr.' &&
+      article.summary === 'This is an example article' &&
+      article.body === 'This is a simple example.',          
+      'article_loadArticles correctly parses entry');
+    done ();
+  })
+})
+
 /*
   article_parseArticles accepts one argument, doc,
   an Articles Database XML Document string and
-  returns an array of Articles. 
+  returns an associative array of Articles, keyed
+  by article ID. 
 */
 function article_parseArticles (doc) {
   var articles = {};
@@ -219,6 +267,56 @@ function article_articleListBlock (context, done) {
 }
 
 /*
+  Unittests for article_articleListBlock. 
+
+  Confirms that the function loads the available
+  article objects and creates an 
+  .article_list_item list element for each.
+*/
+unittest ('article_articleListBlock',
+  {
+    globals: [
+      { variableName: 'block_HANDLERS', value: new block_HandlerStore () },
+      { variableName: 'article_ARTICLES', value: { 
+        'article_article_page/testing-article-1': {
+          author: 'Rebecca Estes',
+          body: 'This is the body text',
+          date: '2016-03-21',
+          id: 'article_article_page/testing-article-1',
+          summary: 'This is the summary',
+          title: 'Article 1'
+        },
+        'article_article_page/testing-article-2': {
+          author: 'Rebecca Estes 2',
+          body: 'This is the body text 2',
+          date: '2017-03-21',
+          id: 'article_article_page/testing-article-2',
+          summary: 'This is the summary 2',
+          title: 'Article 2'
+        }
+      }}
+    ],
+    elements: [
+      $('<div class="article_article_list_block_container"><div class="article_article_list_block"></div></div>')
+    ]
+  },
+  function (assert, elements) {
+    assert.expect (3);
+    block_HANDLERS.add ('article_article_list_block', article_articleListBlock);
+    var done = assert.async ();
+    var numArticles = Object.keys(article_ARTICLES).length;
+    block_expandBlock (new block_Context (12, elements [0]),
+      function () {   
+        assert.ok (numArticles, 'article_articleListBlock accesses article_ARTICLES.');
+        assert.ok (numArticles === $('.article_article_list_block_container li.article_list_item').length, 'article_articleListBlock creates an .article_list_item element for each item in article_ARTICLES.');
+        assert.ok ( $('.article_article_list_block_container li.article_list_item').first ().find('.article_title').text ().trim () === article_ARTICLES['article_article_page/testing-article-1'].title, 'article_articleListBlock inserts the first article\'s title property into the correct list item\'s .article_title element.');
+        done ();
+      }
+    );    
+  }
+)
+
+/*
   article_articleBlock accepts two arguments:
 
   * context, a Block Expansion Context
@@ -247,6 +345,53 @@ function article_articleBlock (context, done) {
   context.element.replaceWith (element);
   done (null, element);
 }
+
+/*
+  Unittests for article_articleBlock.
+
+  Confirms that the function replaces
+  context.element with an HTML element
+  referencing the appropriate article.
+*/
+unittest ('article_articleBlock',
+  {
+    globals: [
+      { variableName: 'block_HANDLERS', value: new block_HandlerStore () },
+      { variableName: 'article_ARTICLES', value: { 
+        'article_article_page/testing-article-1': {
+          author: 'Rebecca Estes',
+          body: 'This is the body text',
+          date: '2016-03-21',
+          id: 'article_article_page/testing-article-1',
+          summary: 'This is the summary',
+          title: 'Article 1'
+        },
+        'article_article_page/testing-article-2': {
+          author: 'Rebecca Estes 2',
+          body: 'This is the body text 2',
+          date: '2017-03-21',
+          id: 'article_article_page/testing-article-2',
+          summary: 'This is the summary 2',
+          title: 'Article 2'
+        }
+      }}
+    ],
+    elements: [
+      $('<div class="article_article_block_container"><div class="article_article_block">article_article_page/testing-article-1</div></div>')
+    ]
+  },
+  function (assert, elements) {
+    assert.expect (2);
+    block_HANDLERS.add ('article_article_block', article_articleBlock);
+    var done = assert.async ();
+    block_expandBlock (new block_Context (12, elements [0]),
+      function () {   
+        assert.notOk ($('.article_article_block_container .article_article_block').length, 'article_articleBlock removes the article_article_block element.');
+        assert.ok ( $('.article_article_block_container .article_title').text ().trim () === article_ARTICLES['article_article_page/testing-article-1'].title, 'article_articleBlock inserts the article\'s title property into its .article_title element.');
+        done ();
+    });    
+  }
+)
 
 /*
   article_authorBlock accepts two arguments:
@@ -280,6 +425,55 @@ function article_authorBlock (context, done) {
 }
 
 /*
+  Unittests for article_authorBlock. 
+
+  Confirms that the function replaces the 
+  .article_author_block element with a new
+  element representing the article author.
+*/
+unittest ('article_authorBlock',
+  {
+    globals: [
+      { variableName: 'block_HANDLERS', value: new block_HandlerStore () },
+      { variableName: 'article_ARTICLES', value: { 
+        'article_article_page/testing-article-1': {
+          author: 'Rebecca Estes',
+          body: 'This is the body text',
+          date: '2016-03-21',
+          id: 'article_article_page/testing-article-1',
+          summary: 'This is the summary',
+          title: 'Article 1'
+        },
+        'article_article_page/testing-article-2': {
+          author: 'Rebecca Estes 2',
+          body: 'This is the body text 2',
+          date: '2017-03-21',
+          id: 'article_article_page/testing-article-2',
+          summary: 'This is the summary 2',
+          title: 'Article 2'
+        }
+      }}
+    ],
+    elements: [
+      $('<div><div class="article_author_block">article_article_page/testing-article-1</div></div>')
+    ]
+  },
+  function (assert, elements) {
+    assert.expect (2);
+
+    block_HANDLERS.add ('article_author_block', article_authorBlock);
+    var done = assert.async ();
+    block_expandBlock (new block_Context (12, elements [0]),
+      function () {   
+        assert.notOk ($('.article_author_block').length, 'article_authorBlock removes the article_author_block element.');        
+        assert.ok ($('.article_author').text ().trim () === article_ARTICLES['article_article_page/testing-article-1'].author, 'article_authorBlock creates an .article_author element containing the name of the article\'s author.');
+        done ();
+      }
+    );    
+  }
+)
+
+/*
   article_bodyBlock accepts two arguments:
 
   * context, a Block Expansion Context
@@ -309,6 +503,55 @@ function article_bodyBlock (context, done) {
   context.element.replaceWith (element);
   done (null, element);
 }
+
+/*
+  Unittests for article_bodyBlock. 
+
+  Confirms that the function replaces the 
+  .article_body_block element with a new
+  element containing the article's body.
+*/
+unittest ('article_bodyBlock',
+  {
+    globals: [
+      { variableName: 'block_HANDLERS', value: new block_HandlerStore () },
+      { variableName: 'article_ARTICLES', value: { 
+        'article_article_page/testing-article-1': {
+          author: 'Rebecca Estes',
+          body: 'This is the body text',
+          date: '2016-03-21',
+          id: 'article_article_page/testing-article-1',
+          summary: 'This is the summary',
+          title: 'Article 1'
+        },
+        'article_article_page/testing-article-2': {
+          author: 'Rebecca Estes',
+          body: 'This is more body text',
+          date: '2017-03-21',
+          id: 'article_article_page/testing-article-2',
+          summary: 'This is another summary',
+          title: 'Article 2'
+        }
+      }}
+    ],
+    elements: [
+      $('<div><div class="article_body_block">article_article_page/testing-article-1</div></div>')
+    ]
+  },
+  function (assert, elements) {
+    assert.expect (2);
+
+    block_HANDLERS.add ('article_body_block', article_bodyBlock);
+    var done = assert.async ();
+    block_expandBlock (new block_Context (12, elements [0]),
+      function () {   
+        assert.notOk ($('.article_body_block').length, 'article_bodyBlock removes the article_body_block element.');
+        assert.ok ($('.article_body').text ().trim () === article_ARTICLES['article_article_page/testing-article-1'].body, 'article_bodyBlock creates an .article_body element with the text of the article\'s body.');
+        done ();
+      }
+    );    
+  }
+)
 
 /*
   article_dateBlock accepts two arguments:
@@ -341,6 +584,55 @@ function article_dateBlock (context, done) {
 }
 
 /*
+  Unittests for article_dateBlock. 
+
+  Confirms that the function replaces the 
+  .article_date_block element with a new element
+  containing the article's date.
+*/
+unittest ('article_dateBlock',
+  {
+    globals: [
+      { variableName: 'block_HANDLERS', value: new block_HandlerStore () },
+      { variableName: 'article_ARTICLES', value: { 
+        'article_article_page/testing-article-1': {
+          author: 'Rebecca Estes',
+          body: 'This is the body text',
+          date: '2016-03-21',
+          id: 'article_article_page/testing-article-1',
+          summary: 'This is the summary',
+          title: 'Article 1'
+        },
+        'article_article_page/testing-article-2': {
+          author: 'Rebecca Estes 2',
+          body: 'This is the body text 2',
+          date: '2017-03-21',
+          id: 'article_article_page/testing-article-2',
+          summary: 'This is the summary 2',
+          title: 'Article 2'
+        }
+      }}
+    ],
+    elements: [
+      $('<div class="article_date_block_container"><div class="article_date_block">article_article_page/testing-article-1</div></div>')
+    ]
+  },
+  function (assert, elements) {
+    assert.expect (2);
+
+    block_HANDLERS.add ('article_date_block', article_dateBlock);
+    var done = assert.async ();
+    block_expandBlock (new block_Context (12, elements [0]),
+      function () {   
+        assert.notOk ($('.article_date_block_container .article_date_block').length, 'article_dateBlock removes the article_date_block element.');        
+        assert.ok ($('.article_date_block_container .article_date').text ().trim () === article_ARTICLES['article_article_page/testing-article-1'].date, 'article_dateBlock creates an .article_date element containing the article\'s date.');
+        done ();
+      }
+    );    
+  }
+)
+
+/*
   article_summaryBlock accepts two arguments:
 
   * context, a Block Expansion Context
@@ -369,6 +661,55 @@ function article_summaryBlock (context, done) {
   context.element.replaceWith (element);
   done (null, element);
 }
+
+/*
+  Unittests for article_summaryBlock. 
+
+  Confirms that the function replaces the 
+  .article_summary_block element with a new
+  element containing the article's summary.
+*/
+unittest ('article_summaryBlock',
+  {
+    globals: [
+      { variableName: 'block_HANDLERS', value: new block_HandlerStore () },
+      { variableName: 'article_ARTICLES', value: { 
+        'article_article_page/testing-article-1': {
+          author: 'Rebecca Estes',
+          body: 'This is the body text',
+          date: '2016-03-21',
+          id: 'article_article_page/testing-article-1',
+          summary: 'This is the summary',
+          title: 'Article 1'
+        },
+        'article_article_page/testing-article-2': {
+          author: 'Rebecca Estes 2',
+          body: 'This is the body text 2',
+          date: '2017-03-21',
+          id: 'article_article_page/testing-article-2',
+          summary: 'This is the summary 2',
+          title: 'Article 2'
+        }
+      }}
+    ],
+    elements: [
+      $('<div class="article_summary_block_container"><div class="article_summary_block">article_article_page/testing-article-1</div></div>')
+    ]
+  },
+  function (assert, elements) {
+    assert.expect (2);
+
+    block_HANDLERS.add ('article_summary_block', article_summaryBlock);
+    var done = assert.async ();
+    block_expandBlock (new block_Context (12, elements [0]),
+      function () {   
+        assert.notOk ($('.article_summary_block_container .article_summary_block').length, 'article_summaryBlock removes the article_summary_block element.');        
+        assert.ok ($('.article_summary_block_container .article_summary').text ().trim () === article_ARTICLES['article_article_page/testing-article-1'].summary, 'article_summaryBlock creates an .article_summary element containing the article summary.');
+        done ();
+      }
+    );    
+  }
+)
 
 /*
   article_titleBlock accepts two arguments:
@@ -400,6 +741,55 @@ function article_titleBlock (context, done) {
   context.element.replaceWith (element);
   done (null, element);
 }
+
+/*
+  Unittests for article_titleBlock. 
+
+  Confirms that the function replaces the 
+  .article_title block element with a new element
+  containing the article's title.
+*/
+unittest ('article_titleBlock',
+  {
+    globals: [
+      { variableName: 'block_HANDLERS', value: new block_HandlerStore () },
+      { variableName: 'article_ARTICLES', value: { 
+        'article_article_page/testing-article-1': {
+          author: 'Rebecca Estes',
+          body: 'This is the body text',
+          date: '2016-03-21',
+          id: 'article_article_page/testing-article-1',
+          summary: 'This is the summary',
+          title: 'Article 1'
+        },
+        'article_article_page/testing-article-2': {
+          author: 'Rebecca Estes 2',
+          body: 'This is the body text 2',
+          date: '2017-03-21',
+          id: 'article_article_page/testing-article-2',
+          summary: 'This is the summary 2',
+          title: 'Article 2'
+        }
+      }}
+    ],
+    elements: [
+      $('<div class="article_title_block_container"><div class="article_title_block">article_article_page/testing-article-1</div></div>')
+    ]
+  },
+  function (assert, elements) {
+    assert.expect (2);
+
+    block_HANDLERS.add ('article_title_block', article_titleBlock);
+    var done = assert.async ();
+    block_expandBlock (new block_Context (12, elements [0]),
+      function () {   
+        assert.notOk ($('.article_title_block_container .article_title_block').length, 'article_titleBlock removes the article_title_block element.');        
+        assert.ok ($('.article_title_block_container .article_title').text ().trim () === article_ARTICLES['article_article_page/testing-article-1'].title, 'article_titleBlock creates an .article_title element containing the article title.');
+        done ();
+      }
+    );    
+  }
+)
 
 /*
   article_createArticleListElement returns a JQuery
